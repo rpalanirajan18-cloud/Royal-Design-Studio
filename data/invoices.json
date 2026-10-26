@@ -1,0 +1,37 @@
+[
+  {
+    "number": "RDS/INV/2026-27/0001",
+    "customerId": "loc_2efca7ef-98de-443a-aea3-9570220c1bfe",
+    "createdById": "admin-master-rds",
+    "issueDate": "2026-10-26T00:00:00.000Z",
+    "dueDate": "2026-11-10T00:00:00.000Z",
+    "status": "DRAFT",
+    "subtotal": 1200,
+    "discountAmount": 0,
+    "deliveryCharge": 0,
+    "taxAmount": 0,
+    "total": 1200,
+    "advancePaid": 0,
+    "amountPaid": 0,
+    "balanceDue": 1200,
+    "notes": "8248149825@icici",
+    "terms": "Payment due within 15 days. GST exempt under small-business threshold.",
+    "items": [
+      {
+        "description": "Art Board 300 GSM Color Print",
+        "unit": "pcs",
+        "quantity": 30,
+        "unitPrice": 40,
+        "discount": 0,
+        "taxRate": 0,
+        "sortOrder": 0
+      }
+    ],
+    "customer": {
+      "name": "Valued Client"
+    },
+    "id": "loc_7c455ac4-0fef-4a92-8197-596fce2a8bd8",
+    "createdAt": "2026-10-26T14:08:26.195Z",
+    "updatedAt": "2026-10-26T14:08:26.195Z"
+  }
+]

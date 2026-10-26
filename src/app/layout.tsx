@@ -15,6 +15,14 @@ export const metadata: Metadata = {
   },
   description:
     "Enterprise Billing & Studio Operations Suite for Royal Design Studio — Digital Marketing, Graphic Design, Branding, Printing & Customized Gifting.",
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

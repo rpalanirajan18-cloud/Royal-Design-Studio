@@ -6,24 +6,24 @@ import {
   Plus,
   UserCheck,
   Phone,
-  Mail,
   MapPin,
   ChevronLeft,
   ChevronRight,
   Loader2,
   X,
   Building,
+  Edit2,
+  Trash2,
 } from "lucide-react";
 
 interface Customer {
   id: string;
   name: string;
-  contactPerson?: string;
   phone: string;
-  whatsapp?: string;
-  email?: string;
+  billingAddress?: string;
   billingCity?: string;
   billingState?: string;
+  billingPincode?: string;
   gstin?: string;
   isActive: boolean;
   createdAt: string;
@@ -37,22 +37,38 @@ export default function CustomersPage() {
   const [page, setPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Modal state
+  // Create Modal state
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [form, setForm] = useState({
     name: "",
-    contactPerson: "",
     phone: "",
-    whatsapp: "",
-    email: "",
     gstin: "",
     billingAddress: "",
     billingCity: "",
     billingState: "Tamil Nadu",
     billingPincode: "",
   });
+
+  // Edit Modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: "",
+    phone: "",
+    gstin: "",
+    billingAddress: "",
+    billingCity: "",
+    billingState: "Tamil Nadu",
+    billingPincode: "",
+    isActive: true,
+  });
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState("");
+
+  // Delete state
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const limit = 20;
   const totalPages = Math.ceil(total / limit);
@@ -106,16 +122,18 @@ export default function CustomersPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setFormError(data.error?.name?._errors?.[0] || data.error?.phone?._errors?.[0] || data.error || "Failed to create customer");
+        setFormError(
+          data.error?.name?._errors?.[0] ||
+            data.error?.phone?._errors?.[0] ||
+            data.error ||
+            "Failed to create customer"
+        );
         return;
       }
       setShowModal(false);
       setForm({
         name: "",
-        contactPerson: "",
         phone: "",
-        whatsapp: "",
-        email: "",
         gstin: "",
         billingAddress: "",
         billingCity: "",
@@ -130,13 +148,83 @@ export default function CustomersPage() {
     }
   };
 
+  const openEditModal = (c: Customer) => {
+    setEditingCustomer(c);
+    setEditForm({
+      name: c.name || "",
+      phone: c.phone || "",
+      gstin: c.gstin || "",
+      billingAddress: c.billingAddress || "",
+      billingCity: c.billingCity || "",
+      billingState: c.billingState || "Tamil Nadu",
+      billingPincode: c.billingPincode || "",
+      isActive: c.isActive ?? true,
+    });
+    setEditError("");
+    setShowEditModal(true);
+  };
+
+  const handleUpdateCustomer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCustomer) return;
+    if (!editForm.name || !editForm.phone) {
+      setEditError("Name and Phone are required");
+      return;
+    }
+    setEditSaving(true);
+    setEditError("");
+
+    try {
+      const res = await fetch(`/api/customers/${editingCustomer.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editForm),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setEditError(data.error?.message || data.error || "Failed to update customer");
+        return;
+      }
+      setShowEditModal(false);
+      setEditingCustomer(null);
+      fetchCustomers();
+    } catch {
+      setEditError("Network error. Please try again.");
+    } finally {
+      setEditSaving(false);
+    }
+  };
+
+  const handleDeleteCustomer = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete customer "${name}"?`)) {
+      return;
+    }
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/customers/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.deactivated) {
+        alert(
+          `Customer has associated invoices or orders and was set to Inactive instead of deleting.`
+        );
+      }
+      fetchCustomers();
+    } catch {
+      alert("Failed to delete customer. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Customers</h1>
-          <p className="text-sm mt-0.5" style={{ color: "hsl(215 20% 55%)" }}>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Customers</h1>
+          <p className="text-sm mt-0.5 text-slate-600 dark:text-slate-400">
             {total} registered clients & organizations
           </p>
         </div>
@@ -150,18 +238,12 @@ export default function CustomersPage() {
       </div>
 
       {/* Search */}
-      <div
-        className="glass-card p-4 animate-fade-in-up"
-        style={{ animationDelay: "50ms" }}
-      >
+      <div className="glass-card p-4 animate-fade-in-up">
         <div className="relative max-w-md">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-            style={{ color: "hsl(215 15% 45%)" }}
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="search"
-            placeholder="Search by name, phone, email, GSTIN…"
+            placeholder="Search by name, phone, city, GSTIN…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="form-input"
@@ -171,26 +253,22 @@ export default function CustomersPage() {
       </div>
 
       {/* Table */}
-      <div
-        className="glass-card overflow-hidden animate-fade-in-up"
-        style={{ animationDelay: "100ms" }}
-      >
+      <div className="glass-card overflow-hidden animate-fade-in-up">
         {loading ? (
           <div className="flex items-center justify-center py-16 gap-3">
-            <Loader2 className="w-5 h-5 animate-spin" style={{ color: "hsl(217 91% 60%)" }} />
-            <span style={{ color: "hsl(215 20% 55%)" }}>Loading customers…</span>
+            <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-blue-400" />
+            <span className="text-slate-600 dark:text-slate-400">Loading customers…</span>
           </div>
         ) : customers.length === 0 ? (
           <div className="text-center py-16">
-            <UserCheck className="w-12 h-12 mx-auto mb-3 opacity-20" />
-            <p className="font-medium mb-1">No customers found</p>
-            <p className="text-sm mb-4" style={{ color: "hsl(215 15% 45%)" }}>
-              {search ? "Try a different search term" : "Add your first client to start creating invoices"}
+            <UserCheck className="w-12 h-12 mx-auto mb-3 opacity-20 text-slate-400" />
+            <p className="font-semibold text-slate-900 dark:text-white mb-1">No customers found</p>
+            <p className="text-sm mb-4 text-slate-600 dark:text-slate-400">
+              {search
+                ? "Try a different search term"
+                : "Add your first client to start creating invoices"}
             </p>
-            <button
-              onClick={() => setShowModal(true)}
-              className="btn btn-primary btn-sm"
-            >
+            <button onClick={() => setShowModal(true)} className="btn btn-primary btn-sm">
               <Plus className="w-4 h-4" /> Add Customer
             </button>
           </div>
@@ -200,11 +278,12 @@ export default function CustomersPage() {
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Customer Name</th>
-                    <th>Contact Info</th>
+                    <th>Customer / Business Name</th>
+                    <th>Phone Number</th>
                     <th>Location</th>
                     <th>GSTIN</th>
                     <th>Status</th>
+                    <th className="text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -212,64 +291,75 @@ export default function CustomersPage() {
                     <tr key={c.id}>
                       <td>
                         <div className="flex items-center gap-3">
-                          <div
-                            className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                            style={{
-                              background:
-                                "linear-gradient(135deg, hsl(217 91% 55% / 0.3), hsl(258 89% 61% / 0.3))",
-                              border: "1px solid hsl(217 91% 60% / 0.2)",
-                              color: "hsl(217 91% 70%)",
-                            }}
-                          >
+                          <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-sm font-bold flex-shrink-0">
                             {c.name[0]?.toUpperCase() ?? "C"}
                           </div>
                           <div>
-                            <p className="font-semibold">{c.name}</p>
-                            {c.contactPerson && (
-                              <p className="text-xs" style={{ color: "hsl(215 15% 45%)" }}>
-                                {c.contactPerson}
+                            <p className="font-bold text-slate-900 dark:text-white">{c.name}</p>
+                            {c.billingAddress && (
+                              <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xs">
+                                {c.billingAddress}
                               </p>
                             )}
                           </div>
                         </div>
                       </td>
                       <td>
-                        <div className="space-y-0.5">
-                          <p className="flex items-center gap-1.5 text-sm">
-                            <Phone className="w-3 h-3 flex-shrink-0" style={{ color: "hsl(215 15% 45%)" }} />
-                            {c.phone}
-                          </p>
-                          {c.email && (
-                            <p className="flex items-center gap-1.5 text-xs" style={{ color: "hsl(215 15% 45%)" }}>
-                              <Mail className="w-3 h-3 flex-shrink-0" />
-                              {c.email}
-                            </p>
-                          )}
-                        </div>
+                        <p className="flex items-center gap-1.5 text-sm font-medium text-slate-800 dark:text-slate-200">
+                          <Phone className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                          {c.phone}
+                        </p>
                       </td>
                       <td>
                         {c.billingCity ? (
-                          <p className="flex items-center gap-1.5 text-sm">
-                            <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: "hsl(215 15% 45%)" }} />
-                            {c.billingCity}{c.billingState ? `, ${c.billingState}` : ""}
+                          <p className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300">
+                            <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                            {c.billingCity}
+                            {c.billingState ? `, ${c.billingState}` : ""}
+                            {c.billingPincode ? ` - ${c.billingPincode}` : ""}
                           </p>
                         ) : (
-                          <span style={{ color: "hsl(215 15% 40%)" }}>—</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">—</span>
                         )}
                       </td>
                       <td>
                         {c.gstin ? (
-                          <span className="font-mono text-xs px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          <span className="font-mono text-xs px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 font-bold">
                             {c.gstin}
                           </span>
                         ) : (
-                          <span className="text-xs" style={{ color: "hsl(215 15% 40%)" }}>Unregistered</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">
+                            Unregistered
+                          </span>
                         )}
                       </td>
                       <td>
                         <span className={`badge ${c.isActive ? "badge-success" : "badge-neutral"}`}>
                           {c.isActive ? "Active" : "Inactive"}
                         </span>
+                      </td>
+                      <td className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => openEditModal(c)}
+                            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
+                            title="Edit customer"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCustomer(c.id, c.name)}
+                            disabled={deletingId === c.id}
+                            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                            title="Delete customer"
+                          >
+                            {deletingId === c.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-rose-500" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -279,26 +369,23 @@ export default function CustomersPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div
-                className="flex items-center justify-between px-5 py-3"
-                style={{ borderTop: "1px solid hsl(215 25% 17%)" }}
-              >
-                <p className="text-xs" style={{ color: "hsl(215 15% 45%)" }}>
+              <div className="flex items-center justify-between px-5 py-3 border-t border-slate-200 dark:border-white/10">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   Showing {(page - 1) * limit + 1}–{Math.min(page * limit, total)} of {total}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
                     className="btn btn-secondary btn-sm btn-icon"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                     {page} / {totalPages}
                   </span>
                   <button
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
                     className="btn btn-secondary btn-sm btn-icon"
                   >
@@ -313,11 +400,11 @@ export default function CustomersPage() {
 
       {/* Add Customer Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
           <div className="bg-white dark:bg-[#0d1527] w-full max-w-lg overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
               <div className="flex items-center gap-2">
-                <Building className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
+                <Building className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">New Customer</h3>
               </div>
               <button
@@ -342,66 +429,25 @@ export default function CustomersPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Apex Corporation or John Doe"
+                  placeholder="e.g. Ponmalar or Apex Corporation"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="form-input"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    Contact Person
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Rajesh Kumar"
-                    value={form.contactPerson}
-                    onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+91 98765 43210"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    WhatsApp Number
-                  </label>
-                  <input
-                    type="tel"
-                    placeholder="+91 98765 43210"
-                    value={form.whatsapp}
-                    onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="contact@example.com"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="+91 98765 43210"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="form-input"
+                />
               </div>
 
               <div>
@@ -469,7 +515,7 @@ export default function CustomersPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 -mx-6 -mb-6 p-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
@@ -484,6 +530,156 @@ export default function CustomersPage() {
                 >
                   {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                   Save Customer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Customer Modal */}
+      {showEditModal && editingCustomer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] w-full max-w-lg overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
+              <div className="flex items-center gap-2">
+                <Edit2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Edit Customer</h3>
+              </div>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateCustomer} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              {editError && (
+                <div className="p-3 text-sm bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-400 rounded-lg">
+                  {editError}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Customer / Business Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Phone Number *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  GSTIN (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. 33AAAAA0000A1Z5"
+                  value={editForm.gstin}
+                  onChange={(e) => setEditForm({ ...editForm, gstin: e.target.value.toUpperCase() })}
+                  className="form-input font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Billing Address
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Street address, building, suite"
+                  value={editForm.billingAddress}
+                  onChange={(e) => setEditForm({ ...editForm, billingAddress: e.target.value })}
+                  className="form-input resize-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="City"
+                    value={editForm.billingCity}
+                    onChange={(e) => setEditForm({ ...editForm, billingCity: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="State"
+                    value={editForm.billingState}
+                    onChange={(e) => setEditForm({ ...editForm, billingState: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    Pincode
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Pincode"
+                    value={editForm.billingPincode}
+                    onChange={(e) => setEditForm({ ...editForm, billingPincode: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  checked={editForm.isActive}
+                  onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
+                  className="w-4 h-4 accent-blue-600 rounded cursor-pointer"
+                />
+                <label htmlFor="isActive" className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                  Customer Status is Active
+                </label>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 -mx-6 -mb-6 p-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="btn btn-secondary btn-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={editSaving}
+                  className="btn btn-primary btn-sm flex items-center gap-2"
+                >
+                  {editSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Update Customer
                 </button>
               </div>
             </form>
