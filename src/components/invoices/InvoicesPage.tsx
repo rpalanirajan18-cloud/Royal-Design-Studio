@@ -345,7 +345,7 @@ export default function InvoicesPage() {
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Sales Invoices</h1>
-          <p className="text-sm mt-0.5 text-slate-500 dark:text-slate-400">
+          <p className="text-sm mt-0.5 text-slate-600 dark:text-slate-400 font-medium">
             {total} invoices issued for design, printing, and digital services
           </p>
         </div>
@@ -440,7 +440,7 @@ export default function InvoicesPage() {
                       <td>
                         <div>
                           <p className="font-bold text-slate-900 dark:text-white">{inv.customer?.name ?? "Customer"}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{inv.customer?.phone ?? ""}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{inv.customer?.phone ?? ""}</p>
                         </div>
                       </td>
                       <td>

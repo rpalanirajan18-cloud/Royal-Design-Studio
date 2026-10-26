@@ -334,36 +334,90 @@ body {
 .animate-fade-in-up { animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /* ─── Universal High-Contrast Visibility in Light Mode ──────── */
+html:not(.dark) {
+  color-scheme: light;
+}
+
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
 html:not(.dark) h1,
 html:not(.dark) h2,
 html:not(.dark) h3,
-html:not(.dark) h4 {
+html:not(.dark) h4,
+html:not(.dark) h5,
+html:not(.dark) h6 {
   color: #0f172a !important;
+}
+
+html:not(.dark) p {
+  color: inherit;
+}
+
+html:not(.dark) aside {
+  background-color: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+html:not(.dark) aside a {
+  color: #334155 !important;
+}
+html:not(.dark) aside a:hover {
+  color: #0f172a !important;
+  background-color: #f1f5f9 !important;
+}
+html:not(.dark) aside a[class*="bg-blue-50"],
+html:not(.dark) aside a[class*="bg-blue-100"] {
+  background-color: #eef2ff !important;
+  color: #27348B !important;
+  font-weight: 700 !important;
+}
+html:not(.dark) aside a[class*="bg-blue-50"] svg,
+html:not(.dark) aside a[class*="bg-blue-100"] svg {
+  color: #27348B !important;
+}
+
+html:not(.dark) header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+html:not(.dark) .glass-card {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Data Tables in Light Mode */
+html:not(.dark) .data-table th {
+  color: #475569 !important;
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-weight: 700 !important;
+}
+
+html:not(.dark) .data-table td {
+  color: #0f172a !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+html:not(.dark) .data-table tbody tr:hover {
+  background-color: #f8fafc !important;
+}
+
+html:not(.dark) .data-table td .text-slate-500,
+html:not(.dark) .data-table td .text-slate-400 {
+  color: #64748b !important;
+}
+
+html:not(.dark) .data-table td [class*="text-[#27348B]"] {
+  color: #27348B !important;
 }
 
 html:not(.dark) label {
   color: #334155 !important;
-}
-
-html:not(.dark) .text-slate-300,
-html:not(.dark) .text-slate-400 {
-  color: #475569 !important;
-}
-
-/* Ensure all buttons, active filter pills, avatars, and solid badges retain crisp white text */
-.btn-primary,
-.btn-primary *,
-[class*="bg-blue-600"],
-[class*="bg-blue-600"] *,
-[class*="bg-[#27348B]"],
-[class*="bg-[#27348B]"] *,
-[class*="bg-purple-600"],
-[class*="bg-purple-600"] *,
-[class*="bg-emerald-600"],
-[class*="bg-emerald-600"] *,
-[class*="bg-rose-600"],
-[class*="bg-rose-600"] * {
-  color: #ffffff !important;
 }
 
 html:not(.dark) select,
@@ -372,6 +426,29 @@ html:not(.dark) input {
   color: #0f172a !important;
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
+}
+
+/* Topbar quick links in Light Mode */
+html:not(.dark) header a[href*="invoices"] {
+  background-color: #eef2ff !important;
+  color: #27348B !important;
+  border-color: #c7d2fe !important;
+}
+html:not(.dark) header a[href*="orders"] {
+  background-color: #faf5ff !important;
+  color: #7e22ce !important;
+  border-color: #e9d5ff !important;
+}
+
+/* Ensure Primary Buttons have bold crisp white text */
+.btn-primary,
+.btn-primary * {
+  color: #ffffff !important;
+}
+
+button[class*="bg-[#27348B]"],
+button[class*="bg-[#27348B]"] * {
+  color: #ffffff !important;
 }
 
 html:not(.dark) option {
@@ -432,22 +509,6 @@ html:not(.dark) .border-white\/5 {
 html:not(.dark) .bg-white\/5,
 html:not(.dark) .bg-white\/10 {
   background-color: #f8fafc !important;
-}
-
-/* Light Mode Guaranteed Shell Layout */
-html:not(.dark) body {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-}
-
-html:not(.dark) aside {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-}
-
-html:not(.dark) header {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
 }
 
 html:not(.dark) main {

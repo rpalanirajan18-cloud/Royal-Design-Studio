@@ -12,6 +12,8 @@ import { createAuditLog } from "@/lib/audit";
 import { z } from "zod";
 import { readStore, writeStore } from "@/lib/store";
 
+export const dynamic = "force-dynamic";
+
 const updateCustomerSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   contactPerson: z.string().optional(),

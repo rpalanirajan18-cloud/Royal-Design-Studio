@@ -128,7 +128,7 @@ export default function Sidebar({ user }: SidebarProps) {
               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 group relative ${
                 isActive
                   ? "bg-blue-50 dark:bg-blue-600/20 text-[#27348B] dark:text-white border border-blue-200 dark:border-blue-500/30 font-bold"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/[0.04]"
+                  : "text-slate-700 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/[0.04]"
               }`}
             >
               {isActive && (
@@ -136,7 +136,7 @@ export default function Sidebar({ user }: SidebarProps) {
               )}
               <Icon
                 className={`flex-shrink-0 transition-colors w-[17px] h-[17px] ${
-                  isActive ? "text-[#27348B] dark:text-cyan-400" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                  isActive ? "text-[#27348B] dark:text-cyan-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200"
                 }`}
               />
               {!collapsed && (
