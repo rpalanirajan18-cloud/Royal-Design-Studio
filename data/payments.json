@@ -12,7 +12,12 @@
     "allocations": [
       {
         "invoiceId": "loc_7c455ac4-0fef-4a92-8197-596fce2a8bd8",
-        "amount": 1200
+        "amount": 1200,
+        "invoice": {
+          "id": "loc_7c455ac4-0fef-4a92-8197-596fce2a8bd8",
+          "number": "RDS/INV/2026-27/0001",
+          "total": 1200
+        }
       }
     ],
     "customer": {

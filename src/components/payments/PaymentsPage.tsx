@@ -24,11 +24,11 @@ interface Payment {
   transactionRef?: string;
   notes?: string;
   isAdvance: boolean;
-  customer: { id: string; name: string; phone: string };
-  allocations: {
-    id: string;
-    amount: number;
-    invoice: { id: string; number: string; total: number };
+  customer?: { id?: string; name: string; phone?: string };
+  allocations?: {
+    id?: string;
+    amount?: number;
+    invoice?: { id?: string; number?: string; total?: number } | null;
   }[];
 }
 
@@ -173,8 +173,10 @@ export default function PaymentsPage() {
   };
 
   const shareReceiptWhatsApp = (p: Payment) => {
+    const custName = p.customer?.name ?? "Valued Customer";
+    const custPhone = (p.customer?.phone ?? "").replace(/[^0-9]/g, "");
     const text = encodeURIComponent(
-      `Hello ${p.customer.name},\n\n` +
+      `Hello ${custName},\n\n` +
       `We have received your payment of *₹${Number(p.amount).toLocaleString("en-IN")}*.\n` +
       `Receipt No: *${p.receiptNumber}*\n` +
       `Payment Method: ${p.method}\n` +
@@ -182,7 +184,11 @@ export default function PaymentsPage() {
       `Date: ${new Date(p.paymentDate).toLocaleDateString("en-IN")}\n\n` +
       `Thank you for your business! — Royal Design Studio`
     );
-    window.open(`https://wa.me/${p.customer.phone.replace(/[^0-9]/g, "")}?text=${text}`, "_blank");
+    if (custPhone) {
+      window.open(`https://wa.me/${custPhone}?text=${text}`, "_blank");
+    } else {
+      window.open(`https://wa.me/?text=${text}`, "_blank");
+    }
   };
 
   return (
@@ -261,8 +267,8 @@ export default function PaymentsPage() {
                         </span>
                       </td>
                       <td>
-                        <p className="font-semibold text-slate-900 dark:text-white">{p.customer.name}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{p.customer.phone}</p>
+                        <p className="font-semibold text-slate-900 dark:text-white">{p.customer?.name ?? "Customer"}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{p.customer?.phone ?? "—"}</p>
                       </td>
                       <td>
                         <span className="text-xs text-slate-600 dark:text-slate-300">
@@ -289,7 +295,7 @@ export default function PaymentsPage() {
                         )}
                       </td>
                       <td>
-                        {allocated ? (
+                        {allocated?.invoice?.number ? (
                           <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                             {allocated.invoice.number}
                           </span>

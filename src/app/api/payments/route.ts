@@ -73,12 +73,23 @@ export async function GET(request: NextRequest) {
     console.warn("Could not query payments from database, reading local store:", err);
     let all = readStore<any>("payments");
     const allCustomers = readStore<any>("customers");
+    const allInvoices = readStore<any>("invoices");
     const custMap = new Map(allCustomers.map((c: any) => [c.id, c]));
+    const invMap = new Map(allInvoices.map((i: any) => [i.id, i]));
 
     all = all.map((p: any) => {
       const cust = custMap.get(p.customerId);
+      const allocations = (p.allocations || []).map((alloc: any) => {
+        const inv = invMap.get(alloc.invoiceId);
+        return {
+          ...alloc,
+          invoice: alloc.invoice || (inv ? { id: inv.id, number: inv.number, total: inv.total } : null),
+        };
+      });
+
       return {
         ...p,
+        allocations,
         customer: cust
           ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
           : (p.customer || { name: "Valued Customer", phone: "" }),
@@ -211,6 +222,15 @@ export async function POST(request: NextRequest) {
       writeStore("invoices", allInvoices);
     }
 
+    const allInvoices = readStore<any>("invoices");
+    const storedAllocations = (data.allocations || []).map((alloc) => {
+      const inv = allInvoices.find((i: any) => i.id === alloc.invoiceId);
+      return {
+        ...alloc,
+        invoice: inv ? { id: inv.id, number: inv.number, total: inv.total } : null,
+      };
+    });
+
     const payment = addItemToStore("payments", {
       receiptNumber,
       customerId: data.customerId,
@@ -221,7 +241,7 @@ export async function POST(request: NextRequest) {
       transactionRef: data.transactionRef,
       notes: data.notes,
       isAdvance: data.isAdvance,
-      allocations: data.allocations || [],
+      allocations: storedAllocations,
       customer: cust
         ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
         : { name: "Valued Customer", phone: "" },
