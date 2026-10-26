@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { allocateDocumentNumber } from "@/lib/numbering";
-import { addItemToStore } from "@/lib/store";
+import { addItemToStore, readStore } from "@/lib/store";
 import { z } from "zod";
 
 const lineItemSchema = z.object({
@@ -78,8 +78,38 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ invoices, total, page, limit });
   } catch (err) {
-    console.warn("Could not query invoices from database:", err);
-    return NextResponse.json({ invoices: [], total: 0, page: 1, limit });
+    console.warn("Could not query invoices from database, reading local store:", err);
+    let allInvoices = readStore<any>("invoices");
+    const allCustomers = readStore<any>("customers");
+    const custMap = new Map(allCustomers.map((c: any) => [c.id, c]));
+
+    allInvoices = allInvoices.map((inv: any) => {
+      const cust = custMap.get(inv.customerId);
+      return {
+        ...inv,
+        customer: cust
+          ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+          : (inv.customer || { name: "Valued Customer", phone: "" }),
+      };
+    });
+
+    if (status && status !== "ALL") {
+      allInvoices = allInvoices.filter((inv: any) => inv.status === status);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      allInvoices = allInvoices.filter(
+        (inv: any) =>
+          inv.number?.toLowerCase().includes(q) ||
+          inv.customer?.name?.toLowerCase().includes(q) ||
+          inv.customer?.phone?.includes(q)
+      );
+    }
+
+    const total = allInvoices.length;
+    const paginated = allInvoices.slice(skip, skip + limit);
+
+    return NextResponse.json({ invoices: paginated, total, page, limit });
   }
 }
 
@@ -171,6 +201,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ invoice }, { status: 201 });
   } catch (err) {
     console.warn("Prisma invoice creation failed, using local store:", err);
+    const allCustomers = readStore<any>("customers");
+    const cust = allCustomers.find((c: any) => c.id === data.customerId);
+    const storedItems = data.items.map((item, idx) => ({
+      ...item,
+      lineTotal:
+        item.quantity * item.unitPrice -
+        item.discount +
+        ((item.quantity * item.unitPrice - item.discount) * item.taxRate) / 100,
+      sortOrder: idx,
+    }));
     const invoice = addItemToStore("invoices", {
       number,
       customerId: data.customerId,
@@ -188,8 +228,10 @@ export async function POST(request: NextRequest) {
       balanceDue,
       notes: data.notes,
       terms: data.terms,
-      items: data.items,
-      customer: { name: "Valued Client" },
+      items: storedItems,
+      customer: cust
+        ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+        : { name: "Valued Customer", phone: "" },
     });
     return NextResponse.json({ invoice }, { status: 201 });
   }

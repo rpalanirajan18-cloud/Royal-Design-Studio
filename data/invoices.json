@@ -28,7 +28,9 @@
       }
     ],
     "customer": {
-      "name": "Valued Client"
+      "id": "loc_2efca7ef-98de-443a-aea3-9570220c1bfe",
+      "name": "Government Hospital Ambasamuthram",
+      "phone": "+91 883 814 3762"
     },
     "id": "loc_7c455ac4-0fef-4a92-8197-596fce2a8bd8",
     "createdAt": "2026-10-26T14:08:26.195Z",

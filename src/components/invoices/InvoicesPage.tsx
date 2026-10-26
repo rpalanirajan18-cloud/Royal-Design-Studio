@@ -274,15 +274,21 @@ export default function InvoicesPage() {
   };
 
   const shareWhatsApp = (inv: Invoice) => {
+    const custName = inv.customer?.name ?? "Customer";
+    const custPhone = (inv.customer?.phone ?? "").replace(/[^0-9]/g, "");
     const text = encodeURIComponent(
-      `Hello ${inv.customer.name},\n\n` +
+      `Hello ${custName},\n\n` +
       `Here is your invoice ${inv.number} from *Royal Design Studio*.\n` +
       `Total: ₹${Number(inv.total).toLocaleString("en-IN")}\n` +
       `Balance Due: ₹${Number(inv.balanceDue).toLocaleString("en-IN")}\n\n` +
       `For payments, UPI ID: royaldesignstudioofficial@okaxis or Bank Transfer.\n` +
       `Thank you for choosing Royal Design Studio!`
     );
-    window.open(`https://wa.me/${inv.customer.phone.replace(/[^0-9]/g, "")}?text=${text}`, "_blank");
+    if (custPhone) {
+      window.open(`https://wa.me/${custPhone}?text=${text}`, "_blank");
+    } else {
+      window.open(`https://wa.me/?text=${text}`, "_blank");
+    }
   };
 
   return (
@@ -385,8 +391,8 @@ export default function InvoicesPage() {
                       </td>
                       <td>
                         <div>
-                          <p className="font-bold text-slate-900 dark:text-white">{inv.customer.name}</p>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{inv.customer.phone}</p>
+                          <p className="font-bold text-slate-900 dark:text-white">{inv.customer?.name ?? "Customer"}</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{inv.customer?.phone ?? ""}</p>
                         </div>
                       </td>
                       <td>
@@ -464,7 +470,7 @@ export default function InvoicesPage() {
                 <Receipt className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
                 <div>
                   <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-white">{selectedInvoice.number}</h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{selectedInvoice.customer.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{selectedInvoice.customer?.name ?? "Customer"}</p>
                 </div>
               </div>
               <button

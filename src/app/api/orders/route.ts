@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { allocateDocumentNumber } from "@/lib/numbering";
-import { addItemToStore } from "@/lib/store";
+import { addItemToStore, readStore } from "@/lib/store";
 import { z } from "zod";
 import { DocumentType, OrderStatus } from "@prisma/client";
 
@@ -94,8 +94,29 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ orders, total, page, limit });
   } catch (err) {
-    console.warn("Could not query orders from database:", err);
-    return NextResponse.json({ orders: [], total: 0, page: 1, limit });
+    console.warn("Could not query orders from database, reading local store:", err);
+    let all = readStore<any>("orders");
+    const allCustomers = readStore<any>("customers");
+    const custMap = new Map(allCustomers.map((c: any) => [c.id, c]));
+
+    all = all.map((o: any) => {
+      const cust = custMap.get(o.customerId);
+      return {
+        ...o,
+        customer: cust
+          ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+          : (o.customer || { name: "Valued Customer", phone: "" }),
+      };
+    });
+
+    if (status) {
+      all = all.filter((o: any) => o.status === status);
+    }
+    if (search) {
+      const s = search.toLowerCase();
+      all = all.filter((o: any) => o.number?.toLowerCase().includes(s) || o.customer?.name?.toLowerCase().includes(s));
+    }
+    return NextResponse.json({ orders: all.slice(skip, skip + limit), total: all.length, page, limit });
   }
 }
 
@@ -188,6 +209,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ order }, { status: 201 });
   } catch (err) {
     console.warn("Prisma order create failed, using local store:", err);
+    const allCustomers = readStore<any>("customers");
+    const cust = allCustomers.find((c: any) => c.id === data.customerId);
     const order = addItemToStore("orders", {
       number,
       customerId: data.customerId,
@@ -203,7 +226,9 @@ export async function POST(request: NextRequest) {
       balanceDue,
       notes: data.notes,
       items: preparedItems,
-      customer: { name: "Valued Client", phone: "" },
+      customer: cust
+        ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+        : { name: "Valued Customer", phone: "" },
     });
     return NextResponse.json({ order }, { status: 201 });
   }

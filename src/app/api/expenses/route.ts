@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { allocateDocumentNumber } from "@/lib/numbering";
-import { addItemToStore } from "@/lib/store";
+import { addItemToStore, readStore } from "@/lib/store";
 import { z } from "zod";
 import { DocumentType, ExpenseCategory, PaymentMethod } from "@prisma/client";
 
@@ -59,8 +59,16 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ expenses });
   } catch (err) {
-    console.warn("Could not query expenses from database:", err);
-    return NextResponse.json({ expenses: [] });
+    console.warn("Could not query expenses from database, reading local store:", err);
+    let all = readStore<any>("expenses");
+    if (category) {
+      all = all.filter((e: any) => e.category === category);
+    }
+    if (search) {
+      const s = search.toLowerCase();
+      all = all.filter((e: any) => e.description?.toLowerCase().includes(s) || e.expenseNumber?.toLowerCase().includes(s));
+    }
+    return NextResponse.json({ expenses: all });
   }
 }
 

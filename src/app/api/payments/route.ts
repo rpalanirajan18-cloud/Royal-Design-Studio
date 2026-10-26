@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { allocateDocumentNumber } from "@/lib/numbering";
-import { addItemToStore } from "@/lib/store";
+import { addItemToStore, readStore, writeStore } from "@/lib/store";
 import { z } from "zod";
 
 const allocationSchema = z.object({
@@ -36,11 +36,22 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const customerId = searchParams.get("customerId");
+  const search = searchParams.get("search") ?? "";
   const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
   const limit = Math.min(100, parseInt(searchParams.get("limit") ?? "20"));
   const skip = (page - 1) * limit;
 
-  const where = customerId ? { customerId } : {};
+  const where = {
+    ...(customerId ? { customerId } : {}),
+    ...(search
+      ? {
+          OR: [
+            { receiptNumber: { contains: search, mode: "insensitive" as const } },
+            { customer: { name: { contains: search, mode: "insensitive" as const } } },
+          ],
+        }
+      : {}),
+  };
 
   try {
     const [payments, total] = await Promise.all([
@@ -59,8 +70,29 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ payments, total });
   } catch (err) {
-    console.warn("Could not query payments from database:", err);
-    return NextResponse.json({ payments: [], total: 0 });
+    console.warn("Could not query payments from database, reading local store:", err);
+    let all = readStore<any>("payments");
+    const allCustomers = readStore<any>("customers");
+    const custMap = new Map(allCustomers.map((c: any) => [c.id, c]));
+
+    all = all.map((p: any) => {
+      const cust = custMap.get(p.customerId);
+      return {
+        ...p,
+        customer: cust
+          ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+          : (p.customer || { name: "Valued Customer", phone: "" }),
+      };
+    });
+
+    if (customerId) {
+      all = all.filter((p: any) => p.customerId === customerId);
+    }
+    if (search) {
+      const s = search.toLowerCase();
+      all = all.filter((p: any) => p.receiptNumber?.toLowerCase().includes(s) || p.customer?.name?.toLowerCase().includes(s));
+    }
+    return NextResponse.json({ payments: all.slice(skip, skip + limit), total: all.length });
   }
 }
 
@@ -158,6 +190,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ payment, receiptNumber }, { status: 201 });
   } catch (err) {
     console.warn("Prisma payment create failed, using local store:", err);
+    const allCustomers = readStore<any>("customers");
+    const cust = allCustomers.find((c: any) => c.id === data.customerId);
+
+    // If allocated to invoices, update invoice balances in store
+    if (data.allocations && data.allocations.length > 0) {
+      const allInvoices = readStore<any>("invoices");
+      for (const alloc of data.allocations) {
+        const inv = allInvoices.find((i: any) => i.id === alloc.invoiceId);
+        if (inv) {
+          inv.amountPaid = Number(inv.amountPaid || 0) + alloc.amount;
+          inv.balanceDue = Math.max(0, Number(inv.total || 0) - inv.amountPaid);
+          if (inv.balanceDue <= 0) {
+            inv.status = "PAID";
+          } else if (inv.amountPaid > 0) {
+            inv.status = "PARTIALLY_PAID";
+          }
+        }
+      }
+      writeStore("invoices", allInvoices);
+    }
+
     const payment = addItemToStore("payments", {
       receiptNumber,
       customerId: data.customerId,
@@ -168,7 +221,10 @@ export async function POST(request: NextRequest) {
       transactionRef: data.transactionRef,
       notes: data.notes,
       isAdvance: data.isAdvance,
-      customer: { name: "Valued Customer" },
+      allocations: data.allocations || [],
+      customer: cust
+        ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+        : { name: "Valued Customer", phone: "" },
     });
     return NextResponse.json({ payment, receiptNumber }, { status: 201 });
   }

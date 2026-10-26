@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { allocateDocumentNumber } from "@/lib/numbering";
-import { addItemToStore } from "@/lib/store";
+import { addItemToStore, readStore } from "@/lib/store";
 import { z } from "zod";
 import { DocumentType, QuotationStatus } from "@prisma/client";
 
@@ -79,8 +79,29 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ quotations, total, page, limit });
   } catch (err) {
-    console.warn("Could not query quotations from database:", err);
-    return NextResponse.json({ quotations: [], total: 0, page: 1, limit });
+    console.warn("Could not query quotations from database, reading local store:", err);
+    let all = readStore<any>("quotations");
+    const allCustomers = readStore<any>("customers");
+    const custMap = new Map(allCustomers.map((c: any) => [c.id, c]));
+
+    all = all.map((q: any) => {
+      const cust = custMap.get(q.customerId);
+      return {
+        ...q,
+        customer: cust
+          ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+          : (q.customer || { name: "Valued Customer", phone: "" }),
+      };
+    });
+
+    if (status) {
+      all = all.filter((q: any) => q.status === status);
+    }
+    if (search) {
+      const s = search.toLowerCase();
+      all = all.filter((q: any) => q.number?.toLowerCase().includes(s) || q.customer?.name?.toLowerCase().includes(s));
+    }
+    return NextResponse.json({ quotations: all.slice(skip, skip + limit), total: all.length, page, limit });
   }
 }
 
@@ -169,6 +190,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ quotation }, { status: 201 });
   } catch (err) {
     console.warn("Prisma quotation create failed, using local store:", err);
+    const allCustomers = readStore<any>("customers");
+    const cust = allCustomers.find((c: any) => c.id === data.customerId);
     const quotation = addItemToStore("quotations", {
       number,
       customerId: data.customerId,
@@ -184,7 +207,9 @@ export async function POST(request: NextRequest) {
       notes: data.notes,
       terms: data.terms,
       items: preparedItems,
-      customer: { name: "Valued Client", phone: "" },
+      customer: cust
+        ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+        : { name: "Valued Customer", phone: "" },
     });
     return NextResponse.json({ quotation }, { status: 201 });
   }

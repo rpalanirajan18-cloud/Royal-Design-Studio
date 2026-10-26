@@ -7,6 +7,7 @@
 
 import puppeteer from "puppeteer";
 import { prisma } from "@/lib/prisma";
+import { readStore } from "@/lib/store";
 
 type CompanySettings = {
   name: string;
@@ -328,52 +329,90 @@ interface InvoicePDFData {
 // ── PDF Generator ──────────────────────────────────────────────────────────────
 
 export async function generateInvoicePDF(invoiceId: string): Promise<Buffer> {
-  const invoice = await prisma.salesInvoice.findUnique({
-    where: { id: invoiceId },
-    include: {
-      customer: true,
-      items: { orderBy: { sortOrder: "asc" } },
-      quotation: { select: { number: true } },
-    },
-  });
+  let invoice: any = null;
+  try {
+    invoice = await prisma.salesInvoice.findUnique({
+      where: { id: invoiceId },
+      include: {
+        customer: true,
+        items: { orderBy: { sortOrder: "asc" } },
+        quotation: { select: { number: true } },
+      },
+    });
+  } catch (err) {
+    console.warn("Prisma invoice fetch failed for PDF, reading store:", err);
+  }
+
+  if (!invoice) {
+    const allInvoices = readStore<any>("invoices");
+    invoice = allInvoices.find((i: any) => i.id === invoiceId || i.number === invoiceId);
+    if (invoice && !invoice.customer?.phone) {
+      const customers = readStore<any>("customers");
+      const cust = customers.find((c: any) => c.id === invoice.customerId);
+      if (cust) {
+        invoice.customer = cust;
+      }
+    }
+  }
 
   if (!invoice) throw new Error("Invoice not found");
 
-  const company = await prisma.companySettings.findFirst();
-  if (!company) throw new Error("Company settings not found");
+  let company: any = null;
+  try {
+    company = await prisma.companySettings.findFirst();
+  } catch {
+    // Ignore and use default
+  }
+
+  if (!company) {
+    company = {
+      name: "Royal Design Studio",
+      addressLine1: "2/21, Santhanakumarpatti",
+      addressLine2: "Avudayanoor, Tenkasi",
+      city: "Tenkasi",
+      state: "Tamil Nadu",
+      pincode: "627808",
+      phone: "+91 82481 49825",
+      email: "royaldesignstudioofficial@gmail.com",
+      currencySymbol: "₹",
+      paymentInstructions: "GPay / PhonePe / Paytm / UPI: 8248149825@icici",
+      defaultInvoiceTerms: "Payment due within 15 days.",
+      isGstRegistered: false,
+    };
+  }
 
   const pdfData: InvoicePDFData = {
     id: invoice.id,
     number: invoice.number,
     status: invoice.status,
-    issueDate: invoice.issueDate,
-    dueDate: invoice.dueDate,
-    subtotal: Number(invoice.subtotal),
-    discountAmount: Number(invoice.discountAmount),
-    deliveryCharge: Number(invoice.deliveryCharge),
-    taxAmount: Number(invoice.taxAmount),
-    total: Number(invoice.total),
-    amountPaid: Number(invoice.amountPaid),
-    balanceDue: Number(invoice.balanceDue),
+    issueDate: new Date(invoice.issueDate),
+    dueDate: new Date(invoice.dueDate),
+    subtotal: Number(invoice.subtotal || 0),
+    discountAmount: Number(invoice.discountAmount || 0),
+    deliveryCharge: Number(invoice.deliveryCharge || 0),
+    taxAmount: Number(invoice.taxAmount || 0),
+    total: Number(invoice.total || 0),
+    amountPaid: Number(invoice.amountPaid || 0),
+    balanceDue: Number(invoice.balanceDue || 0),
     notes: invoice.notes,
     terms: invoice.terms,
     quotationNumber: invoice.quotation?.number,
     customer: {
-      name: invoice.customer.name,
-      contactPerson: invoice.customer.contactPerson,
-      phone: invoice.customer.phone,
-      email: invoice.customer.email,
-      billingAddress: invoice.customer.billingAddress,
-      billingCity: invoice.customer.billingCity,
-      billingPincode: invoice.customer.billingPincode,
+      name: invoice.customer?.name ?? "Valued Client",
+      contactPerson: invoice.customer?.contactPerson,
+      phone: invoice.customer?.phone ?? "",
+      email: invoice.customer?.email,
+      billingAddress: invoice.customer?.billingAddress,
+      billingCity: invoice.customer?.billingCity,
+      billingPincode: invoice.customer?.billingPincode,
     },
-    items: invoice.items.map((item) => ({
+    items: (invoice.items || []).map((item: any) => ({
       description: item.description,
-      unit: item.unit,
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      discount: Number(item.discount),
-      lineTotal: Number(item.lineTotal),
+      unit: item.unit || "pcs",
+      quantity: Number(item.quantity || 1),
+      unitPrice: Number(item.unitPrice || 0),
+      discount: Number(item.discount || 0),
+      lineTotal: Number(item.lineTotal || 0),
     })),
   };
 
