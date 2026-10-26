@@ -38,28 +38,33 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status");
 
-  const deliveries = await prisma.delivery.findMany({
-    where: {
-      ...(status ? { status: status as DeliveryStatus } : {}),
-      ...(search
-        ? {
-            OR: [
-              { recipientName: { contains: search, mode: "insensitive" } },
-              { recipientPhone: { contains: search, mode: "insensitive" } },
-              { trackingNumber: { contains: search, mode: "insensitive" } },
-              { courier: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
-    include: {
-      order: { select: { id: true, number: true } },
-      customer: { select: { id: true, name: true, phone: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    const deliveries = await prisma.delivery.findMany({
+      where: {
+        ...(status ? { status: status as DeliveryStatus } : {}),
+        ...(search
+          ? {
+              OR: [
+                { recipientName: { contains: search, mode: "insensitive" } },
+                { recipientPhone: { contains: search, mode: "insensitive" } },
+                { trackingNumber: { contains: search, mode: "insensitive" } },
+                { courier: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+      },
+      include: {
+        order: { select: { id: true, number: true } },
+        customer: { select: { id: true, name: true, phone: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json({ deliveries });
+    return NextResponse.json({ deliveries });
+  } catch (err) {
+    console.warn("Could not query deliveries from database:", err);
+    return NextResponse.json({ deliveries: [] });
+  }
 }
 
 export async function POST(request: NextRequest) {

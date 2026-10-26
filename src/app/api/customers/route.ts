@@ -56,12 +56,17 @@ export async function GET(request: NextRequest) {
       : {}),
   };
 
-  const [customers, total] = await Promise.all([
-    prisma.customer.findMany({ where, skip, take: limit, orderBy: { name: "asc" } }),
-    prisma.customer.count({ where }),
-  ]);
+  try {
+    const [customers, total] = await Promise.all([
+      prisma.customer.findMany({ where, skip, take: limit, orderBy: { name: "asc" } }),
+      prisma.customer.count({ where }),
+    ]);
 
-  return NextResponse.json({ customers, total, page, limit });
+    return NextResponse.json({ customers, total, page, limit });
+  } catch (err) {
+    console.warn("Could not query customers from database:", err);
+    return NextResponse.json({ customers: [], total: 0, page: 1, limit });
+  }
 }
 
 export async function POST(request: NextRequest) {

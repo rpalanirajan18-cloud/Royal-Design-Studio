@@ -29,18 +29,23 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const plans = await prisma.recurringPlan.findMany({
-    include: {
-      customer: { select: { id: true, name: true, phone: true, email: true } },
-      runs: {
-        orderBy: { createdAt: "desc" },
-        take: 3,
+  try {
+    const plans = await prisma.recurringPlan.findMany({
+      include: {
+        customer: { select: { id: true, name: true, phone: true, email: true } },
+        runs: {
+          orderBy: { createdAt: "desc" },
+          take: 3,
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json({ plans });
+    return NextResponse.json({ plans });
+  } catch (err) {
+    console.warn("Could not query recurring plans from database:", err);
+    return NextResponse.json({ plans: [] });
+  }
 }
 
 export async function POST(request: NextRequest) {

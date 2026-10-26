@@ -34,26 +34,31 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get("category");
   const activeOnly = searchParams.get("active") === "true";
 
-  const products = await prisma.productService.findMany({
-    where: {
-      ...(activeOnly ? { isActive: true } : {}),
-      ...(category && Object.values(ProductCategory).includes(category as ProductCategory)
-        ? { category: category as ProductCategory }
-        : {}),
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: "insensitive" } },
-              { sku: { contains: search, mode: "insensitive" } },
-              { description: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
-    orderBy: { name: "asc" },
-  });
+  try {
+    const products = await prisma.productService.findMany({
+      where: {
+        ...(activeOnly ? { isActive: true } : {}),
+        ...(category && Object.values(ProductCategory).includes(category as ProductCategory)
+          ? { category: category as ProductCategory }
+          : {}),
+        ...(search
+          ? {
+              OR: [
+                { name: { contains: search, mode: "insensitive" } },
+                { sku: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+      },
+      orderBy: { name: "asc" },
+    });
 
-  return NextResponse.json({ products });
+    return NextResponse.json({ products });
+  } catch (err) {
+    console.warn("Could not query products from database:", err);
+    return NextResponse.json({ products: [] });
+  }
 }
 
 export async function POST(request: NextRequest) {

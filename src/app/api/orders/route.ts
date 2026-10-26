@@ -70,27 +70,32 @@ export async function GET(request: NextRequest) {
       : {}),
   };
 
-  const [orders, total] = await Promise.all([
-    prisma.order.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: "desc" },
-      include: {
-        customer: { select: { id: true, name: true, phone: true } },
-        createdBy: { select: { id: true, name: true } },
-        items: true,
-        statusHistory: {
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          include: { updatedBy: { select: { name: true } } },
+  try {
+    const [orders, total] = await Promise.all([
+      prisma.order.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          customer: { select: { id: true, name: true, phone: true } },
+          createdBy: { select: { id: true, name: true } },
+          items: true,
+          statusHistory: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+            include: { updatedBy: { select: { name: true } } },
+          },
         },
-      },
-    }),
-    prisma.order.count({ where }),
-  ]);
+      }),
+      prisma.order.count({ where }),
+    ]);
 
-  return NextResponse.json({ orders, total, page, limit });
+    return NextResponse.json({ orders, total, page, limit });
+  } catch (err) {
+    console.warn("Could not query orders from database:", err);
+    return NextResponse.json({ orders: [], total: 0, page: 1, limit });
+  }
 }
 
 export async function POST(request: NextRequest) {

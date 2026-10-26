@@ -60,22 +60,27 @@ export async function GET(request: NextRequest) {
       : {}),
   };
 
-  const [quotations, total] = await Promise.all([
-    prisma.quotation.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: "desc" },
-      include: {
-        customer: { select: { id: true, name: true, phone: true, email: true } },
-        createdBy: { select: { id: true, name: true } },
-        items: true,
-      },
-    }),
-    prisma.quotation.count({ where }),
-  ]);
+  try {
+    const [quotations, total] = await Promise.all([
+      prisma.quotation.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: {
+          customer: { select: { id: true, name: true, phone: true, email: true } },
+          createdBy: { select: { id: true, name: true } },
+          items: true,
+        },
+      }),
+      prisma.quotation.count({ where }),
+    ]);
 
-  return NextResponse.json({ quotations, total, page, limit });
+    return NextResponse.json({ quotations, total, page, limit });
+  } catch (err) {
+    console.warn("Could not query quotations from database:", err);
+    return NextResponse.json({ quotations: [], total: 0, page: 1, limit });
+  }
 }
 
 export async function POST(request: NextRequest) {

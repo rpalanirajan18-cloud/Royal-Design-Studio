@@ -35,27 +35,32 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get("search") ?? "";
   const category = searchParams.get("category");
 
-  const expenses = await prisma.expense.findMany({
-    where: {
-      ...(category ? { category: category as ExpenseCategory } : {}),
-      ...(search
-        ? {
-            OR: [
-              { description: { contains: search, mode: "insensitive" } },
-              { expenseNumber: { contains: search, mode: "insensitive" } },
-              { transactionRef: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : {}),
-    },
-    include: {
-      supplier: { select: { id: true, name: true } },
-      createdBy: { select: { id: true, name: true } },
-    },
-    orderBy: { date: "desc" },
-  });
+  try {
+    const expenses = await prisma.expense.findMany({
+      where: {
+        ...(category ? { category: category as ExpenseCategory } : {}),
+        ...(search
+          ? {
+              OR: [
+                { description: { contains: search, mode: "insensitive" } },
+                { expenseNumber: { contains: search, mode: "insensitive" } },
+                { transactionRef: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : {}),
+      },
+      include: {
+        supplier: { select: { id: true, name: true } },
+        createdBy: { select: { id: true, name: true } },
+      },
+      orderBy: { date: "desc" },
+    });
 
-  return NextResponse.json({ expenses });
+    return NextResponse.json({ expenses });
+  } catch (err) {
+    console.warn("Could not query expenses from database:", err);
+    return NextResponse.json({ expenses: [] });
+  }
 }
 
 export async function POST(request: NextRequest) {

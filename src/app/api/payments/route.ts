@@ -41,21 +41,26 @@ export async function GET(request: NextRequest) {
 
   const where = customerId ? { customerId } : {};
 
-  const [payments, total] = await Promise.all([
-    prisma.payment.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { paymentDate: "desc" },
-      include: {
-        customer: { select: { name: true } },
-        allocations: { include: { invoice: { select: { number: true } } } },
-      },
-    }),
-    prisma.payment.count({ where }),
-  ]);
+  try {
+    const [payments, total] = await Promise.all([
+      prisma.payment.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { paymentDate: "desc" },
+        include: {
+          customer: { select: { name: true } },
+          allocations: { include: { invoice: { select: { number: true } } } },
+        },
+      }),
+      prisma.payment.count({ where }),
+    ]);
 
-  return NextResponse.json({ payments, total });
+    return NextResponse.json({ payments, total });
+  } catch (err) {
+    console.warn("Could not query payments from database:", err);
+    return NextResponse.json({ payments: [], total: 0 });
+  }
 }
 
 export async function POST(request: NextRequest) {

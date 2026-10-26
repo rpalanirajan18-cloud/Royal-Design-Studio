@@ -63,18 +63,23 @@ export async function GET(request: NextRequest) {
       : {}),
   };
 
-  const [invoices, total] = await Promise.all([
-    prisma.salesInvoice.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: "desc" },
-      include: { customer: { select: { name: true, phone: true } }, items: true },
-    }),
-    prisma.salesInvoice.count({ where }),
-  ]);
+  try {
+    const [invoices, total] = await Promise.all([
+      prisma.salesInvoice.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+        include: { customer: { select: { name: true, phone: true } }, items: true },
+      }),
+      prisma.salesInvoice.count({ where }),
+    ]);
 
-  return NextResponse.json({ invoices, total, page, limit });
+    return NextResponse.json({ invoices, total, page, limit });
+  } catch (err) {
+    console.warn("Could not query invoices from database:", err);
+    return NextResponse.json({ invoices: [], total: 0, page: 1, limit });
+  }
 }
 
 export async function POST(request: NextRequest) {
