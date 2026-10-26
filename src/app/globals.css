@@ -335,16 +335,19 @@ html:not(.dark) .text-slate-400 {
   color: #475569 !important;
 }
 
-html:not(.dark) .text-white {
-  color: #0f172a !important;
-}
-
-html:not(.dark) .btn-primary,
-html:not(.dark) .btn-primary *,
-html:not(.dark) [class*="bg-blue-600"] *,
-html:not(.dark) [class*="bg-[#27348B]"] *,
-html:not(.dark) [class*="bg-purple-600"] *,
-html:not(.dark) [class*="bg-emerald-600"] * {
+/* Ensure all buttons, active filter pills, avatars, and solid badges retain crisp white text */
+.btn-primary,
+.btn-primary *,
+[class*="bg-blue-600"],
+[class*="bg-blue-600"] *,
+[class*="bg-[#27348B]"],
+[class*="bg-[#27348B]"] *,
+[class*="bg-purple-600"],
+[class*="bg-purple-600"] *,
+[class*="bg-emerald-600"],
+[class*="bg-emerald-600"] *,
+[class*="bg-rose-600"],
+[class*="bg-rose-600"] * {
   color: #ffffff !important;
 }
 
@@ -361,17 +364,49 @@ html:not(.dark) option {
   color: #0f172a !important;
 }
 
-/* Modals & Dialogs Light Mode */
-html:not(.dark) .fixed.inset-0 {
-  background-color: rgba(15, 23, 42, 0.6) !important;
+/* Date picker indicator */
+html:not(.dark) input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.2);
+  cursor: pointer;
+}
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
 }
 
+/* Browser autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark textarea:-webkit-autofill,
+.dark select:-webkit-autofill {
+  -webkit-text-fill-color: #f8fafc !important;
+  -webkit-box-shadow: 0 0 0px 1000px #091122 inset !important;
+}
+
+/* Modals & Dialogs Light Mode: Soft airy backdrop instead of pitch dark */
+html:not(.dark) .fixed.inset-0 {
+  background-color: rgba(15, 23, 42, 0.28) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+html:not(.dark) .fixed > div > div,
 html:not(.dark) .fixed .glass-card,
 html:not(.dark) .modal-card {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border-color: #e2e8f0 !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
 }
 
 html:not(.dark) .border-white\/10,
@@ -383,4 +418,5 @@ html:not(.dark) .bg-white\/5,
 html:not(.dark) .bg-white\/10 {
   background-color: #f8fafc !important;
 }
+
 
