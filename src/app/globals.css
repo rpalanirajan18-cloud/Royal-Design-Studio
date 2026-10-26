@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     /* Brand Accent Colors (Royal Design Studio) */
@@ -38,7 +40,20 @@ img[src*="logo"],
   height: 32px !important;
   width: auto !important;
   object-fit: contain !important;
-  display: block;
+}
+
+html:not(.dark) .brand-logo-dark {
+  display: none !important;
+}
+html:not(.dark) .brand-logo-light {
+  display: block !important;
+}
+
+html.dark .brand-logo-light {
+  display: none !important;
+}
+html.dark .brand-logo-dark {
+  display: block !important;
 }
 
 /* On Login page allow slightly larger but strictly bounded logo */
@@ -416,6 +431,26 @@ html:not(.dark) .border-white\/5 {
 
 html:not(.dark) .bg-white\/5,
 html:not(.dark) .bg-white\/10 {
+  background-color: #f8fafc !important;
+}
+
+/* Light Mode Guaranteed Shell Layout */
+html:not(.dark) body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html:not(.dark) aside {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) header {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) main {
   background-color: #f8fafc !important;
 }
 

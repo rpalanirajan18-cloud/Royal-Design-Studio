@@ -177,12 +177,12 @@ export default function LoginPage() {
                 <img
                   src="/logo.png"
                   alt="Royal Design Studio"
-                  className="brand-logo-img h-9 w-auto object-contain dark:hidden"
+                  className="brand-logo-img brand-logo-light h-9 w-auto object-contain dark:hidden"
                 />
                 <img
                   src="/logo-white.png"
                   alt="Royal Design Studio"
-                  className="brand-logo-img h-9 w-auto object-contain hidden dark:block"
+                  className="brand-logo-img brand-logo-dark h-9 w-auto object-contain hidden dark:block"
                 />
               </div>
               <div>

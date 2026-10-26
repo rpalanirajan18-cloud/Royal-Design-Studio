@@ -80,7 +80,7 @@ export default function Sidebar({ user }: SidebarProps) {
           <img
             src="/logo.png"
             alt="Royal Design Studio"
-            className="brand-logo-img h-6 w-auto object-contain dark:hidden"
+            className="brand-logo-img brand-logo-light h-6 w-auto object-contain dark:hidden"
             onError={(e) => {
               (e.target as HTMLElement).style.display = "none";
             }}
@@ -89,7 +89,7 @@ export default function Sidebar({ user }: SidebarProps) {
           <img
             src="/logo-white.png"
             alt="Royal Design Studio"
-            className="brand-logo-img h-6 w-auto object-contain hidden dark:block"
+            className="brand-logo-img brand-logo-dark h-6 w-auto object-contain hidden dark:block"
             onError={(e) => {
               (e.target as HTMLElement).style.display = "none";
             }}

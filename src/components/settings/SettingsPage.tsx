@@ -155,8 +155,8 @@ export default function SettingsPage() {
 
             <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
               <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/10 p-1.5 flex items-center justify-center border border-slate-200 dark:border-white/10">
-                <img src="/logo.png" alt="Royal Design Studio" className="brand-logo-img h-8 w-auto object-contain dark:hidden" />
-                <img src="/logo-white.png" alt="Royal Design Studio" className="brand-logo-img h-8 w-auto object-contain hidden dark:block" />
+                <img src="/logo.png" alt="Royal Design Studio" className="brand-logo-img brand-logo-light h-8 w-auto object-contain dark:hidden" />
+                <img src="/logo-white.png" alt="Royal Design Studio" className="brand-logo-img brand-logo-dark h-8 w-auto object-contain hidden dark:block" />
               </div>
               <div>
                 <p className="font-bold text-slate-900 dark:text-white text-base">Royal Design Studio</p>
