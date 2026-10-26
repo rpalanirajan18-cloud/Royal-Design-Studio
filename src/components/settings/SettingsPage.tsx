@@ -153,14 +153,15 @@ export default function SettingsPage() {
               <h3 className="font-bold text-base text-white">Business Identification</h3>
             </div>
 
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5">
-              <div className="w-16 h-16 rounded-xl bg-white/10 p-2 flex items-center justify-center border border-white/10">
-                <img src="/logo-white.png" alt="Royal Design Studio" className="w-12 h-12 object-contain" />
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <div className="w-12 h-12 rounded-xl bg-white dark:bg-white/10 p-1.5 flex items-center justify-center border border-slate-200 dark:border-white/10">
+                <img src="/logo.png" alt="Royal Design Studio" className="brand-logo-img h-8 w-auto object-contain dark:hidden" />
+                <img src="/logo-white.png" alt="Royal Design Studio" className="brand-logo-img h-8 w-auto object-contain hidden dark:block" />
               </div>
               <div>
-                <p className="font-bold text-white text-base">Royal Design Studio</p>
-                <p className="text-xs text-slate-400">Branding, Digital Marketing, Customized Gifting & Printing</p>
-                <p className="text-xs text-blue-400 font-mono mt-1">Logo configured in public/logo-white.png</p>
+                <p className="font-bold text-slate-900 dark:text-white text-base">Royal Design Studio</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Branding, Digital Marketing, Customized Gifting & Printing</p>
+                <p className="text-xs text-[#27348B] dark:text-blue-400 font-semibold mt-0.5">Motto: Ideas Into Impact</p>
               </div>
             </div>
 

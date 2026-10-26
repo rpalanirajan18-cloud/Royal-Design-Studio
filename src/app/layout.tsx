@@ -23,8 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={fontSans.variable}>
-      <body className="antialiased font-sans bg-[#080d1a] text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white">
+    <html lang="en" className={fontSans.variable} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('rds_theme');if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body className="antialiased font-sans bg-slate-50 dark:bg-[#070c18] text-slate-800 dark:text-slate-100 min-h-screen transition-colors selection:bg-blue-600 selection:text-white">
         {children}
       </body>
     </html>

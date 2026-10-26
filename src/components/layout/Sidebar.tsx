@@ -68,34 +68,44 @@ export default function Sidebar({ user }: SidebarProps) {
 
   return (
     <aside
-      className="flex flex-col h-full transition-all duration-300 relative z-20 select-none bg-[#0a0f1d] border-r border-white/[0.08] flex-shrink-0"
+      className="flex flex-col h-full transition-all duration-300 relative z-20 select-none bg-white dark:bg-[#0a0f1d] border-r border-slate-200 dark:border-white/[0.08] flex-shrink-0"
       style={{
-        width: collapsed ? "74px" : "260px",
+        width: collapsed ? "74px" : "250px",
       }}
     >
-      {/* Studio Header Brand */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-cyan-500/15">
-        <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center p-1 bg-white/[0.04] border border-cyan-400/25 shadow-lg shadow-cyan-500/15">
+      {/* Studio Header Brand with compact, clean logo */}
+      <div className="flex items-center gap-2.5 px-3.5 py-3.5 border-b border-slate-200 dark:border-white/[0.08]">
+        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center p-0.5 bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-cyan-400/25">
+          {/* Logo for light mode */}
+          <img
+            src="/logo.png"
+            alt="Royal Design Studio"
+            className="brand-logo-img h-6 w-auto object-contain dark:hidden"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = "none";
+            }}
+          />
+          {/* Logo for dark mode */}
           <img
             src="/logo-white.png"
             alt="Royal Design Studio"
-            className="w-9 h-9 object-contain"
+            className="brand-logo-img h-6 w-auto object-contain hidden dark:block"
             onError={(e) => {
               (e.target as HTMLElement).style.display = "none";
             }}
           />
         </div>
         {!collapsed && (
-          <div className="overflow-hidden">
+          <div className="overflow-hidden min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="text-sm font-extrabold text-white tracking-tight truncate">
+              <p className="text-xs font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
                 Royal Design
               </p>
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                PRO
+              <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-blue-100 dark:bg-cyan-500/20 text-[#27348B] dark:text-cyan-300 border border-blue-200 dark:border-cyan-400/30">
+                STUDIO
               </span>
             </div>
-            <p className="text-[10px] text-cyan-400 font-bold tracking-wider uppercase truncate">
+            <p className="text-[9px] text-[#27348B] dark:text-cyan-400 font-bold tracking-wider uppercase truncate">
               Ideas Into Impact
             </p>
           </div>
@@ -103,7 +113,7 @@ export default function Sidebar({ user }: SidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 overflow-y-auto py-3 px-2.5 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-2.5 px-2 space-y-0.5">
         {NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -115,18 +125,18 @@ export default function Sidebar({ user }: SidebarProps) {
               key={item.href}
               href={item.href}
               title={collapsed ? item.label : undefined}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 group relative ${
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 group relative ${
                 isActive
-                  ? "bg-gradient-to-r from-blue-600/20 to-purple-600/10 text-white border border-blue-500/30 shadow-md shadow-blue-500/5"
-                  : "text-slate-400 hover:text-slate-100 hover:bg-white/[0.04]"
+                  ? "bg-blue-50 dark:bg-blue-600/20 text-[#27348B] dark:text-white border border-blue-200 dark:border-blue-500/30 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-white/[0.04]"
               }`}
             >
               {isActive && (
-                <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-[#27348B] dark:bg-cyan-400" />
               )}
               <Icon
-                className={`flex-shrink-0 transition-colors w-[18px] h-[18px] ${
-                  isActive ? "text-blue-400" : "text-slate-500 group-hover:text-slate-300"
+                className={`flex-shrink-0 transition-colors w-[17px] h-[17px] ${
+                  isActive ? "text-[#27348B] dark:text-cyan-400" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                 }`}
               />
               {!collapsed && (
@@ -140,34 +150,34 @@ export default function Sidebar({ user }: SidebarProps) {
       </nav>
 
       {/* User profile & Collapse toggler */}
-      <div className="p-3 border-t border-white/[0.08] space-y-2">
+      <div className="p-2.5 border-t border-slate-200 dark:border-white/[0.08] space-y-1.5">
         {!collapsed && (
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20">
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06]">
+            <div className="flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold bg-[#27348B] text-white">
               {user.name?.[0]?.toUpperCase() ?? "A"}
             </div>
-            <div className="flex-1 overflow-hidden">
-              <p className="text-xs font-bold text-white truncate">{user.name ?? "Studio Admin"}</p>
-              <p className="text-[10px] text-slate-400 truncate">
+            <div className="flex-1 overflow-hidden min-w-0">
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user.name ?? "Studio Admin"}</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                 {ROLE_LABELS[user.role] ?? user.role}
               </p>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
               title="Sign out of portal"
-              className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+              className="flex-shrink-0 p-1 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
 
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full py-1.5 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors text-xs"
+          className="w-full py-1 flex items-center justify-center rounded-md text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-xs"
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
         </button>
       </div>
     </aside>

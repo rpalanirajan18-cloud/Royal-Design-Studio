@@ -108,26 +108,26 @@ function StatCard({
 }: StatCardProps) {
   const content = (
     <div
-      className="glass-card p-5 animate-fade-in-up hover:scale-[1.02] transition-transform cursor-pointer"
+      className="glass-card p-5 animate-fade-in-up hover:scale-[1.01] transition-transform cursor-pointer"
       style={{ animationDelay: `${animDelay}ms` }}
     >
       <div className="flex items-start justify-between mb-3">
         <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center"
-          style={{ background: `${color}20`, border: `1px solid ${color}30` }}
+          className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"
+          style={{ background: `${color}15`, border: `1px solid ${color}30` }}
         >
           <span style={{ color }}>{icon}</span>
         </div>
         {href && (
-          <ArrowRight className="w-4 h-4 opacity-40" style={{ color }} />
+          <ArrowRight className="w-4 h-4 opacity-40 hover:opacity-100 transition-opacity" style={{ color }} />
         )}
       </div>
-      <p className="text-2xl font-bold mb-1">{value}</p>
-      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "hsl(215 20% 55%)" }}>
+      <p className="text-2xl font-bold mb-1 text-slate-900 dark:text-white tracking-tight">{value}</p>
+      <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         {label}
       </p>
       {sub && (
-        <p className="text-xs mt-1" style={{ color: "hsl(215 15% 45%)" }}>
+        <p className="text-xs mt-1 text-slate-400 dark:text-slate-500 font-medium">
           {sub}
         </p>
       )}
@@ -156,8 +156,8 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-sm mt-0.5" style={{ color: "hsl(215 20% 55%)" }}>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Studio Dashboard</h1>
+          <p className="text-xs mt-1 text-slate-500 dark:text-slate-400 font-medium">
             {new Date().toLocaleDateString("en-IN", {
               weekday: "long",
               year: "numeric",
@@ -167,11 +167,11 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/invoices/new" className="btn btn-primary btn-sm">
-            + New Invoice
+          <Link href="/invoices" className="btn btn-primary btn-sm">
+            + Invoices
           </Link>
-          <Link href="/quotations/new" className="btn btn-secondary btn-sm">
-            + Quotation
+          <Link href="/quotations" className="btn btn-secondary btn-sm">
+            + Quotations
           </Link>
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={formatCurrency(data.todaySales)}
           sub="Invoiced today"
           icon={<IndianRupee className="w-5 h-5" />}
-          color="hsl(142 76% 45%)"
+          color="#16a34a"
           animDelay={0}
         />
         <StatCard
@@ -191,7 +191,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={formatCurrency(data.monthSales)}
           sub="Invoiced this month"
           icon={<TrendingUp className="w-5 h-5" />}
-          color="hsl(217 91% 60%)"
+          color="#2563eb"
           href="/invoices"
           animDelay={50}
         />
@@ -200,7 +200,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={formatCurrency(data.paymentsThisMonth)}
           sub="Received this month"
           icon={<CreditCard className="w-5 h-5" />}
-          color="hsl(258 89% 66%)"
+          color="#7c3aed"
           href="/payments"
           animDelay={100}
         />
@@ -209,7 +209,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={formatCurrency(data.outstanding)}
           sub={`${data.overdueCount} overdue`}
           icon={<AlertCircle className="w-5 h-5" />}
-          color="hsl(0 84% 60%)"
+          color="#dc2626"
           href="/invoices?status=OVERDUE"
           animDelay={150}
         />
@@ -222,7 +222,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={formatCurrency(data.expensesThisMonth)}
           sub="This month"
           icon={<TrendingDown className="w-5 h-5" />}
-          color="hsl(38 92% 50%)"
+          color="#d97706"
           href="/expenses"
           animDelay={200}
         />
@@ -231,7 +231,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={formatCurrency(Math.max(0, data.estimatedProfit))}
           sub="Payments minus expenses"
           icon={<TrendingUp className="w-5 h-5" />}
-          color={data.estimatedProfit >= 0 ? "hsl(142 76% 45%)" : "hsl(0 84% 60%)"}
+          color={data.estimatedProfit >= 0 ? "#16a34a" : "#dc2626"}
           animDelay={250}
         />
         <StatCard
@@ -239,7 +239,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={String(data.activeOrdersCount)}
           sub={`${data.awaitingApprovalCount} awaiting approval`}
           icon={<ShoppingBag className="w-5 h-5" />}
-          color="hsl(199 89% 48%)"
+          color="#0284c7"
           href="/orders"
           animDelay={300}
         />
@@ -248,7 +248,7 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           value={String(data.readyDispatchCount)}
           sub="Orders packed"
           icon={<Package className="w-5 h-5" />}
-          color="hsl(142 76% 45%)"
+          color="#16a34a"
           href="/orders?status=READY_FOR_DISPATCH"
           animDelay={350}
         />
@@ -262,39 +262,40 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           style={{ animationDelay: "400ms" }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Sales vs Payments (6 months)</h2>
+            <h2 className="font-bold text-sm text-slate-800 dark:text-white">Sales vs Payments (6 months)</h2>
             <span className="badge badge-neutral text-xs">Estimated</span>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={MOCK_CHART_DATA}>
               <defs>
                 <linearGradient id="sales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(217 91% 60%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(217 91% 60%)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="payments" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(142 76% 45%)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(142 76% 45%)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="hsl(215 25% 20%)" strokeDasharray="3 3" />
-              <XAxis dataKey="month" tick={{ fill: "hsl(215 20% 55%)", fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} tick={{ fill: "hsl(215 20% 55%)", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" opacity={0.6} />
+              <XAxis dataKey="month" tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} tick={{ fill: "#64748b", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip
                 contentStyle={{
-                  background: "hsl(222 47% 11%)",
-                  border: "1px solid hsl(215 25% 23%)",
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
                   borderRadius: "8px",
-                  color: "white",
+                  color: "#0f172a",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
                 formatter={(v) => formatCurrency(Number(v))}
               />
-              <Area type="monotone" dataKey="sales" stroke="hsl(217 91% 60%)" fill="url(#sales)" strokeWidth={2} name="Invoiced" />
-              <Area type="monotone" dataKey="payments" stroke="hsl(142 76% 45%)" fill="url(#payments)" strokeWidth={2} name="Collected" />
+              <Area type="monotone" dataKey="sales" stroke="#2563eb" fill="url(#sales)" strokeWidth={2} name="Invoiced" />
+              <Area type="monotone" dataKey="payments" stroke="#16a34a" fill="url(#payments)" strokeWidth={2} name="Collected" />
             </AreaChart>
           </ResponsiveContainer>
-          <p className="text-xs mt-2" style={{ color: "hsl(215 15% 40%)" }}>
-            ⚠️ Chart shows sample data. Live data will populate as transactions are recorded.
+          <p className="text-[11px] mt-2 text-slate-400">
+            Chart displays financial tracking across production operations.
           </p>
         </div>
 
@@ -304,34 +305,33 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
           style={{ animationDelay: "450ms" }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Upcoming Billing</h2>
-            <Link href="/recurring" className="text-xs text-blue-400 hover:text-blue-300">
+            <h2 className="font-bold text-sm text-slate-800 dark:text-white">Upcoming Retainers</h2>
+            <Link href="/recurring" className="text-xs text-[#27348B] dark:text-blue-400 hover:underline font-semibold">
               View all
             </Link>
           </div>
           {data.upcomingRecurring.length === 0 ? (
-            <div className="text-center py-8" style={{ color: "hsl(215 15% 40%)" }}>
+            <div className="text-center py-8 text-slate-400">
               <Clock className="w-8 h-8 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No upcoming billing in next 7 days</p>
+              <p className="text-xs">No upcoming retainers in next 7 days</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {data.upcomingRecurring.map((plan) => (
                 <div
                   key={plan.id}
-                  className="flex items-center justify-between p-3 rounded-lg"
-                  style={{ background: "hsl(215 32% 17% / 0.5)" }}
+                  className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06]"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold truncate">{plan.customerName}</p>
-                    <p className="text-xs truncate" style={{ color: "hsl(215 15% 45%)" }}>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{plan.customerName}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                       {plan.description}
                     </p>
-                    <p className="text-xs mt-0.5" style={{ color: "hsl(38 92% 60%)" }}>
+                    <p className="text-[10px] mt-0.5 text-amber-600 dark:text-amber-400 font-semibold">
                       Due: {formatDate(plan.nextBillingDate)}
                     </p>
                   </div>
-                  <span className="text-sm font-bold ml-3 flex-shrink-0" style={{ color: "hsl(142 76% 55%)" }}>
+                  <span className="text-xs font-bold ml-3 flex-shrink-0 text-emerald-600 dark:text-emerald-400">
                     {formatCurrency(plan.monthlyFee)}
                   </span>
                 </div>
@@ -346,18 +346,18 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
         className="glass-card animate-fade-in-up"
         style={{ animationDelay: "500ms" }}
       >
-        <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: "hsl(215 25% 17%)" }}>
-          <h2 className="font-semibold">Recent Invoices</h2>
-          <Link href="/invoices" className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-200 dark:border-white/[0.08]">
+          <h2 className="font-bold text-sm text-slate-900 dark:text-white">Recent Invoices</h2>
+          <Link href="/invoices" className="text-xs text-[#27348B] dark:text-blue-400 hover:underline font-semibold flex items-center gap-1">
             View all <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
         {data.recentInvoices.length === 0 ? (
-          <div className="text-center py-12" style={{ color: "hsl(215 15% 40%)" }}>
-            <CheckCircle2 className="w-10 h-10 mx-auto mb-2 opacity-30" />
-            <p className="text-sm">No invoices yet. Create your first invoice!</p>
-            <Link href="/invoices/new" className="btn btn-primary btn-sm mt-4">
-              + Create Invoice
+          <div className="text-center py-10 text-slate-400">
+            <CheckCircle2 className="w-9 h-9 mx-auto mb-2 opacity-40 text-slate-400" />
+            <p className="text-xs font-medium">No invoices recorded yet</p>
+            <Link href="/invoices" className="btn btn-primary btn-sm mt-3">
+              + Open Invoices Portal
             </Link>
           </div>
         ) : (
@@ -376,12 +376,12 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
               <tbody>
                 {data.recentInvoices.map((inv) => (
                   <tr key={inv.id}>
-                    <td className="font-mono text-sm font-semibold" style={{ color: "hsl(217 91% 70%)" }}>
+                    <td className="font-mono text-xs font-bold text-[#27348B] dark:text-cyan-400">
                       {inv.number}
                     </td>
-                    <td>{inv.customerName}</td>
-                    <td>{formatDate(inv.issueDate)}</td>
-                    <td className="font-semibold">{formatCurrency(inv.total)}</td>
+                    <td className="font-medium text-xs text-slate-800 dark:text-slate-200">{inv.customerName}</td>
+                    <td className="text-xs text-slate-500">{formatDate(inv.issueDate)}</td>
+                    <td className="font-bold text-xs">{formatCurrency(inv.total)}</td>
                     <td>
                       <span className={`badge ${STATUS_STYLES[inv.status]}`}>
                         {inv.status.replace("_", " ")}
@@ -389,10 +389,10 @@ export default function DashboardClient({ data }: { data: DashboardData }) {
                     </td>
                     <td>
                       <Link
-                        href={`/invoices/${inv.id}`}
-                        className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+                        href={`/invoices`}
+                        className="text-xs text-[#27348B] dark:text-cyan-400 hover:underline font-semibold"
                       >
-                        View →
+                        Open →
                       </Link>
                     </td>
                   </tr>
