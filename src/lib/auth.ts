@@ -12,48 +12,113 @@ import { z } from "zod";
 import { UserRole } from "@prisma/client";
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  username: z.string().min(1).optional(),
+  email: z.string().min(1).optional(),
   password: z.string().min(1),
 });
+
+export interface AdminUserConfig {
+  username: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  password: string;
+}
+
+export const ADMIN_USERS: AdminUserConfig[] = [
+  {
+    username: "palanirajan",
+    name: "Palanirajan",
+    email: "palanirajan@royaldesignstudio.com",
+    role: UserRole.OWNER,
+    password: "royal@design2026",
+  },
+  {
+    username: "ramya",
+    name: "Ramya",
+    email: "ramya@royaldesignstudio.com",
+    role: UserRole.OWNER,
+    password: "royal@design2026",
+  },
+  {
+    username: "ranjith",
+    name: "Ranjith",
+    email: "ranjith@royaldesignstudio.com",
+    role: UserRole.OWNER,
+    password: "royal@design2026",
+  },
+];
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const { email, password } = parsed.data;
-        const normalizedEmail = email.trim().toLowerCase();
+        const rawUser = (parsed.data.username || parsed.data.email || "").trim().toLowerCase();
+        const password = parsed.data.password;
 
-        // 1. Master Studio Admin emergency fallback guarantee
-        if (
-          normalizedEmail === "royaldesignstudioofficial@gmail.com" &&
-          password === "Admin@RDS2026"
-        ) {
-          try {
-            const dbUser = await prisma.user.findUnique({
-              where: { email: normalizedEmail },
-            });
-            if (dbUser) {
-              const passwordsMatch = await bcrypt.compare(password, dbUser.passwordHash);
-              if (passwordsMatch) {
-                await prisma.user.update({
-                  where: { id: dbUser.id },
-                  data: { lastLoginAt: new Date() },
-                }).catch(() => {});
-                return {
-                  id: dbUser.id,
-                  name: dbUser.name,
-                  email: dbUser.email,
-                  role: dbUser.role,
-                };
-              }
-            }
-          } catch (dbErr) {
-            console.warn("Database lookup failed during admin login, using master credentials fallback:", dbErr);
+        // 1. Authenticate against designated 3 Admin users
+        const adminMatch = ADMIN_USERS.find(
+          (a) =>
+            a.username.toLowerCase() === rawUser ||
+            a.email.toLowerCase() === rawUser
+        );
+
+        if (adminMatch) {
+          if (password !== adminMatch.password) {
+            return null;
           }
 
+          // Ensure admin user exists in DB for foreign key / relation consistency
+          try {
+            const dbUser = await prisma.user.upsert({
+              where: { email: adminMatch.email },
+              update: {
+                name: adminMatch.name,
+                role: adminMatch.role,
+                status: "ACTIVE",
+                lastLoginAt: new Date(),
+              },
+              create: {
+                id: `admin-${adminMatch.username}`,
+                name: adminMatch.name,
+                email: adminMatch.email,
+                passwordHash: await bcrypt.hash(adminMatch.password, 10),
+                role: adminMatch.role,
+                status: "ACTIVE",
+                lastLoginAt: new Date(),
+              },
+            });
+
+            return {
+              id: dbUser.id,
+              name: dbUser.name,
+              email: dbUser.email,
+              role: dbUser.role,
+            };
+          } catch (dbErr) {
+            console.warn("Database sync during admin login skipped (using session fallback):", dbErr);
+          }
+
+          return {
+            id: `admin-${adminMatch.username}`,
+            name: adminMatch.name,
+            email: adminMatch.email,
+            role: adminMatch.role,
+          };
+        }
+
+        // 2. Legacy Master Admin fallback
+        if (
+          rawUser === "royaldesignstudioofficial@gmail.com" &&
+          password === "Admin@RDS2026"
+        ) {
           return {
             id: "admin-master-rds",
             name: "Royal Design Studio Admin",
@@ -62,10 +127,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         }
 
-        // 2. Standard DB users
+        // 3. Database users by username / email
         try {
-          const user = await prisma.user.findUnique({
-            where: { email: normalizedEmail },
+          const user = await prisma.user.findFirst({
+            where: {
+              OR: [
+                { email: rawUser },
+                { name: { equals: rawUser, mode: "insensitive" } },
+              ],
+            },
           });
 
           if (!user || user.status === "INACTIVE") return null;

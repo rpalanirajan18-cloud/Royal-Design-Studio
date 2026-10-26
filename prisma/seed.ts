@@ -53,23 +53,47 @@ async function main() {
 
   console.log("✅ Company settings created");
 
-  // ── Admin User ────────────────────────────────────────────────────────────
-  const hashedPassword = await bcrypt.hash("Admin@RDS2026", 12);
+  // ── Admin Users ───────────────────────────────────────────────────────────
+  const adminPasswordHash = await bcrypt.hash("royal@design2026", 12);
 
-  const admin = await prisma.user.upsert({
-    where: { email: "royaldesignstudioofficial@gmail.com" },
-    update: {},
-    create: {
-      name: "Royal Admin",
-      email: "royaldesignstudioofficial@gmail.com",
-      passwordHash: hashedPassword,
-      role: "OWNER",
-      status: "ACTIVE",
+  const adminUsers = [
+    {
+      id: "admin-palanirajan",
+      name: "Palanirajan",
+      email: "palanirajan@royaldesignstudio.com",
     },
-  });
+    {
+      id: "admin-ramya",
+      name: "Ramya",
+      email: "ramya@royaldesignstudio.com",
+    },
+    {
+      id: "admin-ranjith",
+      name: "Ranjith",
+      email: "ranjith@royaldesignstudio.com",
+    },
+  ];
 
-  console.log(`✅ Admin user created: ${admin.email}`);
-  console.log("   Default password: Admin@RDS2026 (CHANGE THIS IMMEDIATELY)");
+  for (const adm of adminUsers) {
+    const user = await prisma.user.upsert({
+      where: { email: adm.email },
+      update: {
+        name: adm.name,
+        passwordHash: adminPasswordHash,
+        role: "OWNER",
+        status: "ACTIVE",
+      },
+      create: {
+        id: adm.id,
+        name: adm.name,
+        email: adm.email,
+        passwordHash: adminPasswordHash,
+        role: "OWNER",
+        status: "ACTIVE",
+      },
+    });
+    console.log(`✅ Admin user seeded: ${adm.name} (${adm.email})`);
+  }
 
   // ── Sample Product/Service Catalog ────────────────────────────────────────
   const products = [

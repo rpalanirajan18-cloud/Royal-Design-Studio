@@ -1,0 +1,28 @@
+[
+  {
+    "receiptNumber": "RDS/REC/2026-27/0001",
+    "customerId": "loc_4cf72b7a-c507-4318-9b21-193aadd40186",
+    "createdById": "admin-master-rds",
+    "paymentDate": "2026-10-26T00:00:00.000Z",
+    "method": "UPI",
+    "amount": 1200,
+    "transactionRef": "",
+    "notes": "",
+    "isAdvance": false,
+    "allocations": [
+      {
+        "invoiceId": "loc_7c455ac4-0fef-4a92-8197-596fce2a8bd8",
+        "amount": 1200
+      }
+    ],
+    "customer": {
+      "id": "loc_4cf72b7a-c507-4318-9b21-193aadd40186",
+      "name": "Ponmalar",
+      "phone": "+91 99407 53620",
+      "email": "r.palanirajan18@gmail.com"
+    },
+    "id": "loc_e415aa50-7507-4dcd-985f-640581d43cf3",
+    "createdAt": "2026-10-26T15:09:41.840Z",
+    "updatedAt": "2026-10-26T15:09:41.840Z"
+  }
+]

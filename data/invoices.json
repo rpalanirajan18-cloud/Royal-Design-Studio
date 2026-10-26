@@ -1,19 +1,69 @@
 [
   {
+    "number": "RDS/INV/2026-27/0002",
+    "customerId": "loc_4cf72b7a-c507-4318-9b21-193aadd40186",
+    "createdById": "admin-master-rds",
+    "issueDate": "2026-10-26T00:00:00.000Z",
+    "dueDate": "2026-11-10T00:00:00.000Z",
+    "status": "ISSUED",
+    "subtotal": 1400,
+    "discountAmount": 200,
+    "deliveryCharge": 0,
+    "taxAmount": 0,
+    "total": 1200,
+    "advancePaid": 1200,
+    "amountPaid": 1200,
+    "balanceDue": 0,
+    "notes": "",
+    "terms": "Payment due within 15 days. GST exempt under small-business threshold.",
+    "items": [
+      {
+        "description": "12X18 Photo Frame",
+        "unit": "pcs",
+        "quantity": 900,
+        "unitPrice": 1,
+        "discount": 0,
+        "taxRate": 0,
+        "sortOrder": 0,
+        "lineTotal": 900
+      },
+      {
+        "description": "12X8 Photo Frame",
+        "unit": "pcs",
+        "quantity": 500,
+        "unitPrice": 1,
+        "discount": 0,
+        "taxRate": 0,
+        "sortOrder": 1,
+        "lineTotal": 500
+      }
+    ],
+    "customer": {
+      "id": "loc_4cf72b7a-c507-4318-9b21-193aadd40186",
+      "name": "Ponmalar",
+      "phone": "+91 99407 53620",
+      "email": "r.palanirajan18@gmail.com"
+    },
+    "id": "loc_49a0ea3f-a2da-4965-9740-54d74715df1f",
+    "createdAt": "2026-10-26T15:08:30.528Z",
+    "updatedAt": "2026-10-26T15:08:30.528Z",
+    "issuedAt": "2026-10-26T15:09:05.324Z"
+  },
+  {
     "number": "RDS/INV/2026-27/0001",
     "customerId": "loc_2efca7ef-98de-443a-aea3-9570220c1bfe",
     "createdById": "admin-master-rds",
     "issueDate": "2026-10-26T00:00:00.000Z",
     "dueDate": "2026-11-10T00:00:00.000Z",
-    "status": "DRAFT",
+    "status": "PAID",
     "subtotal": 1200,
     "discountAmount": 0,
     "deliveryCharge": 0,
     "taxAmount": 0,
     "total": 1200,
     "advancePaid": 0,
-    "amountPaid": 0,
-    "balanceDue": 1200,
+    "amountPaid": 1200,
+    "balanceDue": 0,
     "notes": "8248149825@icici",
     "terms": "Payment due within 15 days. GST exempt under small-business threshold.",
     "items": [
@@ -35,6 +85,7 @@
     },
     "id": "loc_7c455ac4-0fef-4a92-8197-596fce2a8bd8",
     "createdAt": "2026-10-26T14:08:26.195Z",
-    "updatedAt": "2026-10-26T14:08:26.195Z"
+    "updatedAt": "2026-10-26T14:08:26.195Z",
+    "issuedAt": "2026-10-26T15:08:42.158Z"
   }
 ]

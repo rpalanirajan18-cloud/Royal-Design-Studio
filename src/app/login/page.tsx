@@ -13,7 +13,6 @@ import {
   Gift,
   Layers,
   ArrowRight,
-  Zap,
 } from "lucide-react";
 
 function LoginForm() {
@@ -21,17 +20,11 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const fillAdminCredentials = () => {
-    setEmail("royaldesignstudioofficial@gmail.com");
-    setPassword("Admin@RDS2026");
-    setError("");
-  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,13 +33,13 @@ function LoginForm() {
 
     try {
       const result = await signIn("credentials", {
-        email: email.trim(),
+        username: username.trim(),
         password,
         redirect: false,
       });
 
       if (result?.error) {
-        setError("Invalid email or password. Please try again or use the Auto-Fill button above.");
+        setError("Invalid username or password. Please check your credentials and try again.");
         setLoading(false);
       } else {
         router.push(callbackUrl);
@@ -60,24 +53,6 @@ function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* 1-Click Quick Fill Button for instantaneous login testing */}
-      <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/25 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-          <div>
-            <p className="text-xs font-bold text-slate-800 dark:text-white">Default Admin Login</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">royaldesignstudioofficial@gmail.com</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={fillAdminCredentials}
-          className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#27348B] hover:bg-[#1e2870] dark:bg-blue-600 dark:hover:bg-blue-500 text-white transition-all shadow-sm"
-        >
-          Auto-Fill
-        </button>
-      </div>
-
       {error && (
         <div className="p-3 rounded-xl text-xs bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 flex items-start gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1 flex-shrink-0" />
@@ -86,18 +61,18 @@ function LoginForm() {
       )}
 
       <div>
-        <label htmlFor="email" className="form-label">
-          Email Address
+        <label htmlFor="username" className="form-label">
+          Username
         </label>
         <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="royaldesignstudioofficial@gmail.com"
+          id="username"
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter username (e.g. palanirajan)"
           className="form-input"
           required
-          autoComplete="email"
+          autoComplete="username"
           autoFocus
         />
       </div>
