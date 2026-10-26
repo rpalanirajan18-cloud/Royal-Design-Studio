@@ -1,36 +1,181 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Royal Design Studio — Billing & Business Management Software
 
-## Getting Started
+A complete, self-hosted billing and business management web application for Royal Design Studio.
 
-First, run the development server:
+---
+
+## 🚀 Quick Start (Local Development)
+
+### Prerequisites
+- Node.js 20+
+- PostgreSQL 15+ running locally
+- Git
+
+### 1. Install dependencies
+
+```bash
+cd d:/Royal/app
+npm install --legacy-peer-deps
+```
+
+### 2. Set up environment
+
+```bash
+cp .env.example .env.local
+# Edit .env.local with your local database credentials
+```
+
+### 3. Start a local PostgreSQL (Docker shortcut)
+
+```bash
+docker run -d \
+  --name rds-db \
+  -e POSTGRES_USER=rds_user \
+  -e POSTGRES_PASSWORD=localpass123 \
+  -e POSTGRES_DB=rds_billing \
+  -p 5432:5432 \
+  postgres:15-alpine
+```
+
+### 4. Run database migrations
+
+```bash
+npx prisma migrate dev --name init
+```
+
+### 5. Seed demo data
+
+```bash
+npm run db:seed
+```
+
+This creates:
+- **Admin user**: `royaldesignstudioofficial@gmail.com` / `Admin@RDS2026`
+- Company settings pre-filled with Royal Design Studio details
+- 10 sample products/services
+
+> ⚠️ **Change the admin password immediately after first login!**
+
+### 6. Start the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) — you'll be redirected to login.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🐳 Production Deployment (Docker)
 
-## Learn More
+### 1. Configure environment
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.example .env.production
+# Set DATABASE_URL, NEXTAUTH_SECRET, NEXTAUTH_URL, POSTGRES_PASSWORD
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Generate a secret:
+```bash
+openssl rand -base64 32
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Update Caddyfile
 
-## Deploy on Vercel
+Replace `yourdomain.com` with your actual domain.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Build and start
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker compose up -d --build
+docker compose exec app npx prisma migrate deploy
+docker compose exec app npx tsx prisma/seed.ts
+```
+
+---
+
+## 🗄️ Database Management
+
+```bash
+npm run db:studio      # Visual DB browser
+npm run db:migrate     # Create new migration (dev)
+npx prisma migrate deploy   # Apply migrations (production)
+bash scripts/backup.sh       # Backup DB + uploads
+bash scripts/restore.sh /path/to/backup.tar.gz   # Restore
+```
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── (dashboard)/         # Protected dashboard routes
+│   │   ├── dashboard/       # Main dashboard
+│   │   ├── customers/       # Customer management
+│   │   ├── invoices/        # Sales invoices
+│   │   ├── quotations/      # Quotations
+│   │   ├── proforma/        # Proforma invoices
+│   │   ├── orders/          # Gifting & printing orders
+│   │   ├── payments/        # Payments & receipts
+│   │   ├── expenses/        # Expenses & suppliers
+│   │   ├── deliveries/      # Delivery management
+│   │   ├── recurring/       # Recurring billing
+│   │   ├── reports/         # Business reports
+│   │   └── settings/        # App settings
+│   ├── api/                 # API routes
+│   └── login/               # Login page
+├── components/              # UI components
+├── lib/
+│   ├── auth.ts              # NextAuth
+│   ├── prisma.ts            # DB client
+│   ├── permissions.ts       # RBAC
+│   ├── numbering.ts         # Document numbering
+│   ├── pdf.ts               # PDF generation
+│   └── audit.ts             # Audit logging
+prisma/
+├── schema.prisma            # Full DB schema
+└── seed.ts                  # Demo data
+scripts/
+├── backup.sh
+└── restore.sh
+```
+
+---
+
+## 👤 Roles
+
+| Role | Access |
+|------|--------|
+| Owner/Admin | Full access |
+| Billing Staff | Customers, Quotations, Invoices, Payments |
+| Order Manager | Orders, Delivery |
+| Designer | Assigned orders, artwork |
+| Accountant | Read-only financial reports |
+
+---
+
+## 📄 Document Numbering
+
+| Type | Format | Example |
+|------|--------|---------|
+| Invoice | RDS/INV/2026-27/0001 | Configurable in Settings |
+| Quotation | RDS/QTN/2026-27/0001 | Configurable in Settings |
+| Proforma | RDS/PI/2026-27/0001 | Configurable in Settings |
+| Receipt | RDS/REC/2026-27/0001 | Configurable in Settings |
+
+---
+
+## ⚠️ Important Notes
+
+- **GST**: Not-registered mode active by default. Enable in Settings when registered.
+- **WhatsApp**: PDF is generated then user manually attaches and shares.
+- **Backups**: Always test restoration. Copy backups off-server.
+- **Passwords**: Change the seed admin password immediately.
+
+---
+
+## 🛠️ Tech Stack
+
+Next.js 16 · TypeScript · PostgreSQL 15 · Prisma ORM · NextAuth.js v5 · Puppeteer · Docker · Caddy

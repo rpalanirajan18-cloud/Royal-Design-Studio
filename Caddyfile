@@ -1,0 +1,29 @@
+# Royal Design Studio — Caddyfile
+# Replace yourdomain.com with your actual domain
+
+yourdomain.com {
+    reverse_proxy app:3000
+
+    # Serve uploaded files through app (not directly)
+    # File access is controlled by the application
+
+    encode gzip
+
+    header {
+        # Security headers
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy strict-origin-when-cross-origin
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/access.log
+    }
+}
+
+# Redirect www to non-www (optional)
+# www.yourdomain.com {
+#     redir https://yourdomain.com{uri}
+# }
