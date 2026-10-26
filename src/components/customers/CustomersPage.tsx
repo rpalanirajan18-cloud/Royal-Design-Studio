@@ -313,16 +313,16 @@ export default function CustomersPage() {
 
       {/* Add Customer Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-lg overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] w-full max-w-lg overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <Building className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold">New Customer</h3>
+                <Building className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">New Customer</h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -330,13 +330,13 @@ export default function CustomersPage() {
 
             <form onSubmit={handleCreateCustomer} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {formError && (
-                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+                <div className="p-3 text-sm bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-400 rounded-lg">
                   {formError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Customer / Business Name *
                 </label>
                 <input
@@ -351,7 +351,7 @@ export default function CustomersPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Contact Person
                   </label>
                   <input
@@ -363,7 +363,7 @@ export default function CustomersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Phone Number *
                   </label>
                   <input
@@ -379,7 +379,7 @@ export default function CustomersPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     WhatsApp Number
                   </label>
                   <input
@@ -391,7 +391,7 @@ export default function CustomersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Email Address
                   </label>
                   <input
@@ -405,7 +405,7 @@ export default function CustomersPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   GSTIN (Optional)
                 </label>
                 <input
@@ -418,7 +418,7 @@ export default function CustomersPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Billing Address
                 </label>
                 <textarea
@@ -432,7 +432,7 @@ export default function CustomersPage() {
 
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     City
                   </label>
                   <input
@@ -444,7 +444,7 @@ export default function CustomersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     State
                   </label>
                   <input
@@ -456,7 +456,7 @@ export default function CustomersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Pincode
                   </label>
                   <input
@@ -469,7 +469,7 @@ export default function CustomersPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

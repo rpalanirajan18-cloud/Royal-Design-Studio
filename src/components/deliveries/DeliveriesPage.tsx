@@ -125,8 +125,8 @@ export default function DeliveriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Delivery & Dispatch Management</h1>
-          <p className="text-sm mt-0.5 text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Delivery & Dispatch Management</h1>
+          <p className="text-sm mt-0.5 text-slate-600 dark:text-slate-400">
             Dispatch tracking, courier tracking numbers, and delivery confirmation
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function DeliveriesPage() {
       {/* Filter and Search */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-card p-4 animate-fade-in-up">
         <div className="relative max-w-md w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="search"
             placeholder="Search recipient, tracking #, courier…"
@@ -163,7 +163,7 @@ export default function DeliveriesPage() {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === tab.id
                   ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
               }`}
             >
               {tab.label}
@@ -208,30 +208,30 @@ export default function DeliveriesPage() {
                 {deliveries.map((d) => (
                   <tr key={d.id}>
                     <td>
-                      <p className="font-semibold text-white">{d.recipientName}</p>
-                      <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                        <Phone className="w-3 h-3 text-slate-500" />
+                      <p className="font-semibold text-slate-900 dark:text-white">{d.recipientName}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <Phone className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                         {d.recipientPhone}
                       </p>
                     </td>
                     <td>
-                      <p className="text-xs text-slate-300 max-w-xs truncate">{d.address}</p>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 max-w-xs truncate">{d.address}</p>
                       {d.city && <p className="text-xs text-slate-500">{d.city}{d.pincode ? ` - ${d.pincode}` : ""}</p>}
                     </td>
                     <td>
-                      <span className="text-xs text-slate-300 font-medium">{d.courier || "Direct Delivery"}</span>
+                      <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">{d.courier || "Direct Delivery"}</span>
                     </td>
                     <td>
                       {d.trackingNumber ? (
-                        <span className="font-mono text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                        <span className="font-mono text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2 py-0.5 rounded border border-blue-200 dark:border-blue-500/20 font-bold">
                           {d.trackingNumber}
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-500">—</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">—</span>
                       )}
                     </td>
                     <td>
-                      <span className="text-xs text-white font-semibold">₹{Number(d.deliveryFee).toFixed(2)}</span>
+                      <span className="text-xs text-slate-900 dark:text-white font-semibold">₹{Number(d.deliveryFee).toFixed(2)}</span>
                     </td>
                     <td>
                       <span className={`badge ${
@@ -274,16 +274,16 @@ export default function DeliveriesPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-lg overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
               <div className="flex items-center gap-2">
-                <Truck className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold">New Delivery Challan</h3>
+                <Truck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">New Delivery Challan</h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -291,14 +291,14 @@ export default function DeliveriesPage() {
 
             <form onSubmit={handleCreate} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {formError && (
-                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-lg">
                   {formError}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Recipient Name *
                   </label>
                   <input
@@ -311,7 +311,7 @@ export default function DeliveriesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Recipient Phone *
                   </label>
                   <input
@@ -326,7 +326,7 @@ export default function DeliveriesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Delivery Address *
                 </label>
                 <textarea
@@ -341,7 +341,7 @@ export default function DeliveriesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     City / Town
                   </label>
                   <input
@@ -353,7 +353,7 @@ export default function DeliveriesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Pincode
                   </label>
                   <input
@@ -368,7 +368,7 @@ export default function DeliveriesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Courier / Transporter
                   </label>
                   <input
@@ -380,7 +380,7 @@ export default function DeliveriesPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Tracking # / LR No.
                   </label>
                   <input
@@ -394,7 +394,7 @@ export default function DeliveriesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Delivery Fee (₹)
                 </label>
                 <input
@@ -407,7 +407,7 @@ export default function DeliveriesPage() {
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 -mx-6 -mb-6 p-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

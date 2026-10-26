@@ -27,6 +27,8 @@ const createDeliverySchema = z.object({
   notes: z.string().optional(),
 });
 
+import { readStore, addItemToStore } from "@/lib/store";
+
 export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -62,8 +64,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ deliveries });
   } catch (err) {
-    console.warn("Could not query deliveries from database:", err);
-    return NextResponse.json({ deliveries: [] });
+    console.warn("Could not query deliveries from database, reading local store:", err);
+    let all = readStore<any>("deliveries");
+    if (search) {
+      all = all.filter(d => d.recipientName?.toLowerCase().includes(search.toLowerCase()) || d.recipientPhone?.includes(search) || d.trackingNumber?.toLowerCase().includes(search.toLowerCase()));
+    }
+    return NextResponse.json({ deliveries: all });
   }
 }
 
@@ -81,36 +87,49 @@ export async function POST(request: NextRequest) {
   }
 
   const data = parsed.data;
-  const delivery = await prisma.delivery.create({
-    data: {
-      orderId: data.orderId,
-      customerId: data.customerId,
-      recipientName: data.recipientName,
-      recipientPhone: data.recipientPhone,
-      address: data.address,
-      city: data.city,
-      pincode: data.pincode,
-      deliveryFee: data.deliveryFee,
-      expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
-      courier: data.courier,
-      driverContact: data.driverContact,
-      trackingNumber: data.trackingNumber,
-      notes: data.notes,
-      status: DeliveryStatus.PENDING,
-    },
-    include: {
-      order: true,
-      customer: true,
-    },
-  });
+  try {
+    const delivery = await prisma.delivery.create({
+      data: {
+        orderId: data.orderId,
+        customerId: data.customerId,
+        recipientName: data.recipientName,
+        recipientPhone: data.recipientPhone,
+        address: data.address,
+        city: data.city,
+        pincode: data.pincode,
+        deliveryFee: data.deliveryFee,
+        expectedDate: data.expectedDate ? new Date(data.expectedDate) : undefined,
+        courier: data.courier,
+        driverContact: data.driverContact,
+        trackingNumber: data.trackingNumber,
+        notes: data.notes,
+        status: DeliveryStatus.PENDING,
+      },
+      include: {
+        order: true,
+        customer: true,
+      },
+    });
 
-  await createAuditLog({
-    userId: session.user.id,
-    action: "CREATE",
-    entityType: "Delivery",
-    entityId: delivery.id,
-    description: `Created delivery for ${delivery.recipientName} (${delivery.trackingNumber ?? "Local"})`,
-  });
+    await createAuditLog({
+      userId: session.user.id,
+      action: "CREATE",
+      entityType: "Delivery",
+      entityId: delivery.id,
+      description: `Created delivery for ${delivery.recipientName} (${delivery.trackingNumber ?? "Local"})`,
+    }).catch(() => {});
 
-  return NextResponse.json({ delivery }, { status: 201 });
+    return NextResponse.json({ delivery }, { status: 201 });
+  } catch (err) {
+    console.warn("Prisma delivery create failed, saving to local store:", err);
+    const customers = readStore<any>("customers");
+    const customer = customers.find(c => c.id === data.customerId) || { id: data.customerId, name: data.recipientName, phone: data.recipientPhone };
+    const delivery = addItemToStore("deliveries", {
+      ...data,
+      customer,
+      status: "PENDING",
+      createdAt: new Date(),
+    });
+    return NextResponse.json({ delivery }, { status: 201 });
+  }
 }

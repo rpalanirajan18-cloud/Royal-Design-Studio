@@ -317,3 +317,70 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up { animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ─── Universal High-Contrast Visibility in Light Mode ──────── */
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4 {
+  color: #0f172a !important;
+}
+
+html:not(.dark) label {
+  color: #334155 !important;
+}
+
+html:not(.dark) .text-slate-300,
+html:not(.dark) .text-slate-400 {
+  color: #475569 !important;
+}
+
+html:not(.dark) .text-white {
+  color: #0f172a !important;
+}
+
+html:not(.dark) .btn-primary,
+html:not(.dark) .btn-primary *,
+html:not(.dark) [class*="bg-blue-600"] *,
+html:not(.dark) [class*="bg-[#27348B]"] *,
+html:not(.dark) [class*="bg-purple-600"] *,
+html:not(.dark) [class*="bg-emerald-600"] * {
+  color: #ffffff !important;
+}
+
+html:not(.dark) select,
+html:not(.dark) textarea,
+html:not(.dark) input {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+html:not(.dark) option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Modals & Dialogs Light Mode */
+html:not(.dark) .fixed.inset-0 {
+  background-color: rgba(15, 23, 42, 0.6) !important;
+}
+
+html:not(.dark) .fixed .glass-card,
+html:not(.dark) .modal-card {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+html:not(.dark) .border-white\/10,
+html:not(.dark) .border-white\/5 {
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .bg-white\/5,
+html:not(.dark) .bg-white\/10 {
+  background-color: #f8fafc !important;
+}
+

@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { z } from "zod";
+import { readStore, addItemToStore } from "@/lib/store";
 
 const createCustomerSchema = z.object({
   name: z.string().min(1).max(200),
@@ -64,8 +65,21 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ customers, total, page, limit });
   } catch (err) {
-    console.warn("Could not query customers from database:", err);
-    return NextResponse.json({ customers: [], total: 0, page: 1, limit });
+    console.warn("Could not query customers from database, reading fallback store:", err);
+    interface StoredCustomer {
+      id?: string;
+      name: string;
+      contactPerson?: string;
+      phone: string;
+      email?: string;
+      isActive?: boolean;
+    }
+    let all = readStore<StoredCustomer>("customers");
+    if (search) {
+      const q = search.toLowerCase();
+      all = all.filter(c => c.name?.toLowerCase().includes(q) || c.phone?.includes(q) || c.contactPerson?.toLowerCase().includes(q));
+    }
+    return NextResponse.json({ customers: all.slice(skip, skip + limit), total: all.length, page, limit });
   }
 }
 
@@ -82,21 +96,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const customer = await prisma.customer.create({
-    data: {
+  try {
+    const customer = await prisma.customer.create({
+      data: {
+        ...parsed.data,
+        email: parsed.data.email || undefined,
+      },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "CREATE",
+      entityType: "Customer",
+      entityId: customer.id,
+      description: `Created customer: ${customer.name}`,
+      ipAddress: request.headers.get("x-forwarded-for") ?? undefined,
+    }).catch(() => {});
+
+    return NextResponse.json({ customer }, { status: 201 });
+  } catch (err) {
+    console.warn("Prisma customer create failed, saving to local store:", err);
+    const customer = addItemToStore("customers", {
       ...parsed.data,
-      email: parsed.data.email || undefined,
-    },
-  });
-
-  await createAuditLog({
-    userId: session.user.id,
-    action: "CREATE",
-    entityType: "Customer",
-    entityId: customer.id,
-    description: `Created customer: ${customer.name}`,
-    ipAddress: request.headers.get("x-forwarded-for") ?? undefined,
-  });
-
-  return NextResponse.json({ customer }, { status: 201 });
+      isActive: true,
+      balance: 0,
+      createdAt: new Date(),
+    });
+    return NextResponse.json({ customer }, { status: 201 });
+  }
 }

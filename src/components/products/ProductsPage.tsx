@@ -143,8 +143,8 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Products & Services Catalog</h1>
-          <p className="text-sm mt-0.5" style={{ color: "hsl(215 20% 55%)" }}>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Products & Services Catalog</h1>
+          <p className="text-sm mt-0.5 text-slate-500 dark:text-slate-400">
             Design services, printing products, customized gifting, and digital packages
           </p>
         </div>
@@ -160,17 +160,13 @@ export default function ProductsPage() {
       {/* Filters and Search */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between glass-card p-4 animate-fade-in-up">
         <div className="relative max-w-md w-full">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-            style={{ color: "hsl(215 15% 45%)" }}
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="search"
             placeholder="Search items by name, SKU, description…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: "38px" }}
+            className="form-input !pl-9"
           />
         </div>
 
@@ -188,8 +184,8 @@ export default function ProductsPage() {
               onClick={() => setActiveCategory(tab.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 activeCategory === tab.id
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-[#27348B] text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
               }`}
             >
               {tab.label}
@@ -202,14 +198,14 @@ export default function ProductsPage() {
       <div className="glass-card overflow-hidden animate-fade-in-up">
         {loading ? (
           <div className="flex items-center justify-center py-16 gap-3">
-            <Loader2 className="w-5 h-5 animate-spin" style={{ color: "hsl(217 91% 60%)" }} />
-            <span style={{ color: "hsl(215 20% 55%)" }}>Loading catalog…</span>
+            <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-cyan-400" />
+            <span className="text-slate-500 dark:text-slate-400 text-sm">Loading catalog…</span>
           </div>
         ) : products.length === 0 ? (
           <div className="text-center py-16">
-            <Package className="w-12 h-12 mx-auto mb-3 opacity-20" />
-            <p className="font-medium mb-1">No catalog items found</p>
-            <p className="text-sm mb-4" style={{ color: "hsl(215 15% 45%)" }}>
+            <Package className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+            <p className="font-bold text-slate-900 dark:text-white mb-1">No catalog items found</p>
+            <p className="text-sm mb-4 text-slate-500 dark:text-slate-400">
               Add graphic design packages, printing items, or gifting products
             </p>
             <button onClick={() => setShowModal(true)} className="btn btn-primary btn-sm">
@@ -226,7 +222,7 @@ export default function ProductsPage() {
                   <th>Category</th>
                   <th>Selling Price</th>
                   <th>Unit</th>
-                  <th>Tax</th>
+                  <th>GST Rate</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -237,36 +233,36 @@ export default function ProductsPage() {
                   return (
                     <tr key={p.id}>
                       <td>
-                        <span className="font-mono text-xs px-2 py-1 rounded bg-white/5 border border-white/10 text-slate-300">
+                        <span className="font-mono text-xs px-2 py-1 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 font-semibold">
                           {p.sku}
                         </span>
                       </td>
                       <td>
                         <div>
-                          <p className="font-semibold text-white">{p.name}</p>
+                          <p className="font-bold text-slate-900 dark:text-white">{p.name}</p>
                           {p.description && (
-                            <p className="text-xs text-slate-400 max-w-sm truncate mt-0.5">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm truncate mt-0.5">
                               {p.description}
                             </p>
                           )}
                         </div>
                       </td>
                       <td>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                          <Icon className="w-3.5 h-3.5 text-blue-400" />
+                        <div className="flex items-center gap-1.5 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                          <Icon className="w-3.5 h-3.5 text-[#27348B] dark:text-cyan-400" />
                           <span>{catConf.label}</span>
                         </div>
                       </td>
                       <td>
-                        <span className="font-bold text-white text-base">
+                        <span className="font-bold text-slate-900 dark:text-white text-base">
                           ₹{Number(p.sellingPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                         </span>
                       </td>
                       <td>
-                        <span className="text-xs text-slate-400 uppercase">{p.unit}</span>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 uppercase font-medium">{p.unit}</span>
                       </td>
                       <td>
-                        <span className="text-xs text-slate-400">{Number(p.taxRate)}%</span>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">{Number(p.taxRate)}%</span>
                       </td>
                       <td>
                         <span className={`badge ${p.isActive ? "badge-success" : "badge-neutral"}`}>
@@ -284,16 +280,16 @@ export default function ProductsPage() {
 
       {/* Add Product Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-lg overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] w-full max-w-lg overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold">New Catalog Item</h3>
+                <Package className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">New Catalog Item</h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -301,13 +297,13 @@ export default function ProductsPage() {
 
             <form onSubmit={handleCreateProduct} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {formError && (
-                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+                <div className="p-3 text-sm bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-400 rounded-lg">
                   {formError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Item Name *
                 </label>
                 <input
@@ -322,7 +318,7 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Category *
                   </label>
                   <select
@@ -339,7 +335,7 @@ export default function ProductsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     SKU Code (Optional)
                   </label>
                   <input
@@ -354,7 +350,7 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Selling Price (₹) *
                   </label>
                   <input
@@ -369,7 +365,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Cost Price (₹)
                   </label>
                   <input
@@ -383,7 +379,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Unit
                   </label>
                   <input
@@ -397,7 +393,7 @@ export default function ProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Description / Deliverables
                 </label>
                 <textarea
@@ -409,7 +405,7 @@ export default function ProductsPage() {
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

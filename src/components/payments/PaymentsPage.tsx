@@ -190,8 +190,8 @@ export default function PaymentsPage() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Payments & Receipts</h1>
-          <p className="text-sm mt-0.5 text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Payments & Receipts</h1>
+          <p className="text-sm mt-0.5 text-slate-600 dark:text-slate-400">
             Payment transactions, invoice settlements, and official receipt vouchers
           </p>
         </div>
@@ -204,7 +204,7 @@ export default function PaymentsPage() {
       {/* Search */}
       <div className="glass-card p-4 animate-fade-in-up">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="search"
             placeholder="Search receipt #, client, transaction ref…"
@@ -256,16 +256,16 @@ export default function PaymentsPage() {
                   return (
                     <tr key={p.id}>
                       <td>
-                        <span className="font-mono text-xs font-bold text-blue-400">
+                        <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                           {p.receiptNumber}
                         </span>
                       </td>
                       <td>
-                        <p className="font-semibold text-white">{p.customer.name}</p>
-                        <p className="text-xs text-slate-400">{p.customer.phone}</p>
+                        <p className="font-semibold text-slate-900 dark:text-white">{p.customer.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{p.customer.phone}</p>
                       </td>
                       <td>
-                        <span className="text-xs text-slate-300">
+                        <span className="text-xs text-slate-600 dark:text-slate-300">
                           {new Date(p.paymentDate).toLocaleDateString("en-IN", {
                             day: "2-digit",
                             month: "short",
@@ -274,7 +274,7 @@ export default function PaymentsPage() {
                         </span>
                       </td>
                       <td>
-                        <span className="font-bold text-emerald-400 text-base">
+                        <span className="font-bold text-emerald-600 dark:text-emerald-400 text-base">
                           ₹{Number(p.amount).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                         </span>
                       </td>
@@ -283,24 +283,24 @@ export default function PaymentsPage() {
                       </td>
                       <td>
                         {p.transactionRef ? (
-                          <span className="font-mono text-xs text-slate-300">{p.transactionRef}</span>
+                          <span className="font-mono text-xs text-slate-600 dark:text-slate-300">{p.transactionRef}</span>
                         ) : (
-                          <span className="text-xs text-slate-500">—</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">—</span>
                         )}
                       </td>
                       <td>
                         {allocated ? (
-                          <span className="font-mono text-xs text-blue-400">
+                          <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                             {allocated.invoice.number}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">Advance / Unallocated</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">Advance / Unallocated</span>
                         )}
                       </td>
                       <td>
                         <button
                           onClick={() => shareReceiptWhatsApp(p)}
-                          className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400"
+                          className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
                           title="WhatsApp Receipt Voucher"
                         >
                           <Share2 className="w-4 h-4" />
@@ -317,16 +317,16 @@ export default function PaymentsPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-lg overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
               <div className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold">Record Payment Receipt</h3>
+                <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Record Payment Receipt</h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -334,13 +334,13 @@ export default function PaymentsPage() {
 
             <form onSubmit={handleRecordPayment} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {formError && (
-                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-lg">
                   {formError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Customer *
                 </label>
                 <select
@@ -360,7 +360,7 @@ export default function PaymentsPage() {
 
               {unpaidInvoices.length > 0 && (
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Apply to Invoice
                   </label>
                   <select
@@ -384,7 +384,7 @@ export default function PaymentsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Amount Received (₹) *
                   </label>
                   <input
@@ -395,11 +395,11 @@ export default function PaymentsPage() {
                     placeholder="0.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="form-input font-bold text-emerald-400 text-base"
+                    className="form-input font-bold text-emerald-600 dark:text-emerald-400 text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Payment Date
                   </label>
                   <input
@@ -414,7 +414,7 @@ export default function PaymentsPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Payment Method
                   </label>
                   <select
@@ -428,7 +428,7 @@ export default function PaymentsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Transaction Ref / UPI UTR
                   </label>
                   <input
@@ -442,7 +442,7 @@ export default function PaymentsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Notes
                 </label>
                 <textarea
@@ -454,7 +454,7 @@ export default function PaymentsPage() {
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 -mx-6 -mb-6 p-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

@@ -137,8 +137,8 @@ export default function RecurringPage() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Recurring Retainers & Subscriptions</h1>
-          <p className="text-sm mt-0.5 text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Recurring Retainers & Subscriptions</h1>
+          <p className="text-sm mt-0.5 text-slate-500 dark:text-slate-400">
             Monthly graphic design retainers, website maintenance contracts, and digital marketing retainers
           </p>
         </div>
@@ -152,14 +152,14 @@ export default function RecurringPage() {
       <div className="glass-card overflow-hidden animate-fade-in-up">
         {loading ? (
           <div className="flex items-center justify-center py-16 gap-3">
-            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-            <span className="text-slate-400">Loading retainers…</span>
+            <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-cyan-400" />
+            <span className="text-slate-500 dark:text-slate-400 text-sm">Loading retainers…</span>
           </div>
         ) : plans.length === 0 ? (
           <div className="text-center py-16">
-            <RefreshCw className="w-12 h-12 mx-auto mb-3 opacity-20" />
-            <p className="font-medium mb-1">No active recurring retainers</p>
-            <p className="text-sm mb-4 text-slate-400">
+            <RefreshCw className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+            <p className="font-bold text-slate-900 dark:text-white mb-1">No active recurring retainers</p>
+            <p className="text-sm mb-4 text-slate-500 dark:text-slate-400">
               Set up monthly retainers for digital marketing clients and recurring website maintenance
             </p>
             <button onClick={openModal} className="btn btn-primary btn-sm">
@@ -185,25 +185,25 @@ export default function RecurringPage() {
                 {plans.map((p) => (
                   <tr key={p.id}>
                     <td>
-                      <p className="font-semibold text-white">{p.customer.name}</p>
-                      <p className="text-xs text-slate-400">{p.customer.phone}</p>
+                      <p className="font-bold text-slate-900 dark:text-white">{p.customer.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{p.customer.phone}</p>
                     </td>
                     <td>
-                      <p className="text-sm text-slate-200 font-medium">{p.description}</p>
+                      <p className="text-sm text-slate-800 dark:text-slate-200 font-medium">{p.description}</p>
                     </td>
                     <td>
                       <span className="badge badge-purple text-xs">{p.frequency}</span>
                     </td>
                     <td>
-                      <span className="text-xs text-slate-300 font-mono">Day {p.billingDayOfMonth}</span>
+                      <span className="text-xs text-slate-700 dark:text-slate-300 font-mono font-medium">Day {p.billingDayOfMonth}</span>
                     </td>
                     <td>
-                      <span className="font-bold text-emerald-400 text-base">
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400 text-base">
                         ₹{Number(p.monthlyFee).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                       </span>
                     </td>
                     <td>
-                      <span className="text-xs text-slate-300">
+                      <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
                         {new Date(p.nextBillingDate).toLocaleDateString("en-IN", {
                           day: "2-digit",
                           month: "short",
@@ -227,14 +227,14 @@ export default function RecurringPage() {
                         {p.status === RecurringPlanStatus.ACTIVE ? (
                           <button
                             onClick={() => updatePlanStatus(p.id, RecurringPlanStatus.PAUSED)}
-                            className="px-2 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-xs font-semibold"
+                            className="px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold transition-colors"
                           >
                             Pause
                           </button>
                         ) : (
                           <button
                             onClick={() => updatePlanStatus(p.id, RecurringPlanStatus.ACTIVE)}
-                            className="px-2 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold"
+                            className="px-2.5 py-1 rounded bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold transition-colors"
                           >
                             Activate
                           </button>
@@ -251,16 +251,16 @@ export default function RecurringPage() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-lg overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] w-full max-w-lg overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold">New Recurring Retainer Plan</h3>
+                <RefreshCw className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">New Recurring Retainer Plan</h3>
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -268,13 +268,13 @@ export default function RecurringPage() {
 
             <form onSubmit={handleCreate} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {formError && (
-                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+                <div className="p-3 text-sm bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-400 rounded-lg">
                   {formError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Client *
                 </label>
                 <select
@@ -293,7 +293,7 @@ export default function RecurringPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Service Package Description *
                 </label>
                 <input
@@ -308,7 +308,7 @@ export default function RecurringPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Retainer Fee (₹) *
                   </label>
                   <input
@@ -319,11 +319,11 @@ export default function RecurringPage() {
                     placeholder="e.g. 15000"
                     value={monthlyFee}
                     onChange={(e) => setMonthlyFee(e.target.value)}
-                    className="form-input font-bold text-emerald-400 text-base"
+                    className="form-input font-bold text-emerald-600 dark:text-emerald-400 text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Billing Frequency
                   </label>
                   <select
@@ -341,7 +341,7 @@ export default function RecurringPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Billing Day (1–28)
                   </label>
                   <input
@@ -354,7 +354,7 @@ export default function RecurringPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Contract Start Date
                   </label>
                   <input
@@ -367,7 +367,7 @@ export default function RecurringPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}

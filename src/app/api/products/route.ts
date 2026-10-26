@@ -10,6 +10,7 @@ import { hasPermission } from "@/lib/permissions";
 import { createAuditLog } from "@/lib/audit";
 import { z } from "zod";
 import { ProductCategory } from "@prisma/client";
+import { readStore, addItemToStore } from "@/lib/store";
 
 const createProductSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -56,8 +57,22 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ products });
   } catch (err) {
-    console.warn("Could not query products from database:", err);
-    return NextResponse.json({ products: [] });
+    console.warn("Could not query products from database, using local store:", err);
+    interface StoredProduct {
+      name: string;
+      sku?: string;
+      description?: string;
+      category?: string;
+      isActive?: boolean;
+    }
+    let all = readStore<StoredProduct>("products");
+    if (activeOnly) all = all.filter(p => p.isActive);
+    if (category) all = all.filter(p => p.category === category);
+    if (search) {
+      const q = search.toLowerCase();
+      all = all.filter(p => p.name?.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q));
+    }
+    return NextResponse.json({ products: all });
   }
 }
 
@@ -79,7 +94,7 @@ export async function POST(request: NextRequest) {
   // Auto generate a SKU if not provided
   let sku = data.sku?.trim().toUpperCase();
   if (!sku) {
-    const count = await prisma.productService.count();
+    const count = Math.floor(Math.random() * 9000) + 1000;
     const prefix =
       data.category === ProductCategory.GRAPHIC_DESIGN_BRANDING
         ? "DSG"
@@ -88,11 +103,36 @@ export async function POST(request: NextRequest) {
         : data.category === ProductCategory.GIFTING_CUSTOMIZED
         ? "GFT"
         : "SRV";
-    sku = `${prefix}-${String(count + 1).padStart(4, "0")}`;
+    sku = `${prefix}-${count}`;
   }
 
-  const product = await prisma.productService.create({
-    data: {
+  try {
+    const product = await prisma.productService.create({
+      data: {
+        name: data.name.trim(),
+        sku,
+        description: data.description?.trim(),
+        category: data.category,
+        unit: data.unit.trim() || "pcs",
+        sellingPrice: data.sellingPrice,
+        costPrice: data.costPrice,
+        taxRate: data.taxRate,
+        isActive: true,
+      },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "CREATE",
+      entityType: "ProductService",
+      entityId: product.id,
+      description: `Created item ${product.name} (${product.sku})`,
+    }).catch(() => {});
+
+    return NextResponse.json({ product }, { status: 201 });
+  } catch (err) {
+    console.warn("Prisma product create failed, using local store:", err);
+    const product = addItemToStore("products", {
       name: data.name.trim(),
       sku,
       description: data.description?.trim(),
@@ -102,16 +142,7 @@ export async function POST(request: NextRequest) {
       costPrice: data.costPrice,
       taxRate: data.taxRate,
       isActive: true,
-    },
-  });
-
-  await createAuditLog({
-    userId: session.user.id,
-    action: "CREATE",
-    entityType: "ProductService",
-    entityId: product.id,
-    description: `Created item ${product.name} (${product.sku})`,
-  });
-
-  return NextResponse.json({ product }, { status: 201 });
+    });
+    return NextResponse.json({ product }, { status: 201 });
+  }
 }

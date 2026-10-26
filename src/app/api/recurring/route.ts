@@ -22,6 +22,8 @@ const createPlanSchema = z.object({
   notes: z.string().optional(),
 });
 
+import { readStore, addItemToStore } from "@/lib/store";
+
 export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -43,8 +45,9 @@ export async function GET() {
 
     return NextResponse.json({ plans });
   } catch (err) {
-    console.warn("Could not query recurring plans from database:", err);
-    return NextResponse.json({ plans: [] });
+    console.warn("Could not query recurring plans from database, reading local store:", err);
+    const plans = readStore<any>("recurring");
+    return NextResponse.json({ plans });
   }
 }
 
@@ -66,31 +69,47 @@ export async function POST(request: NextRequest) {
   const endDate = data.endDate ? new Date(data.endDate) : undefined;
   const nextBillingDate = new Date(startDate);
 
-  const plan = await prisma.recurringPlan.create({
-    data: {
-      customerId: data.customerId,
-      description: data.description,
-      monthlyFee: data.monthlyFee,
-      frequency: data.frequency,
-      billingDayOfMonth: data.billingDayOfMonth,
+  try {
+    const plan = await prisma.recurringPlan.create({
+      data: {
+        customerId: data.customerId,
+        description: data.description,
+        monthlyFee: data.monthlyFee,
+        frequency: data.frequency,
+        billingDayOfMonth: data.billingDayOfMonth,
+        startDate,
+        endDate,
+        nextBillingDate,
+        status: RecurringPlanStatus.ACTIVE,
+        notes: data.notes,
+      },
+      include: {
+        customer: true,
+      },
+    });
+
+    await createAuditLog({
+      userId: session.user.id,
+      action: "CREATE",
+      entityType: "RecurringPlan",
+      entityId: plan.id,
+      description: `Created recurring retainer plan for ${plan.customer.name} (₹${plan.monthlyFee}/${plan.frequency})`,
+    }).catch(() => {});
+
+    return NextResponse.json({ plan }, { status: 201 });
+  } catch (err) {
+    console.warn("Prisma recurring plan create failed, saving to local store:", err);
+    const customers = readStore<any>("customers");
+    const customer = customers.find(c => c.id === data.customerId) || { id: data.customerId, name: "Customer", phone: "" };
+    const plan = addItemToStore("recurring", {
+      ...data,
+      customer,
       startDate,
       endDate,
       nextBillingDate,
-      status: RecurringPlanStatus.ACTIVE,
-      notes: data.notes,
-    },
-    include: {
-      customer: true,
-    },
-  });
-
-  await createAuditLog({
-    userId: session.user.id,
-    action: "CREATE",
-    entityType: "RecurringPlan",
-    entityId: plan.id,
-    description: `Created recurring retainer plan for ${plan.customer.name} (₹${plan.monthlyFee}/${plan.frequency})`,
-  });
-
-  return NextResponse.json({ plan }, { status: 201 });
+      status: "ACTIVE",
+      createdAt: new Date(),
+    });
+    return NextResponse.json({ plan }, { status: 201 });
+  }
 }

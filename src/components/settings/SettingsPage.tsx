@@ -119,8 +119,8 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Studio Profile & Settings</h1>
-          <p className="text-sm mt-0.5 text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Studio Profile & Settings</h1>
+          <p className="text-sm mt-0.5 text-slate-600 dark:text-slate-400">
             Configure business contact details, GST registration, numbering prefix, and invoice terms
           </p>
         </div>
@@ -129,18 +129,18 @@ export default function SettingsPage() {
       {loading ? (
         <div className="flex items-center justify-center py-20 gap-3 glass-card">
           <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-          <span className="text-slate-400">Loading settings…</span>
+          <span className="text-slate-500 dark:text-slate-400">Loading settings…</span>
         </div>
       ) : (
         <form onSubmit={handleSave} className="space-y-6 animate-fade-in-up">
           {error && (
-            <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+            <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-lg">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="p-3 text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg flex items-center gap-2">
+            <div className="p-3 text-sm bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 rounded-lg flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" />
               Settings updated successfully!
             </div>
@@ -148,9 +148,9 @@ export default function SettingsPage() {
 
           {/* Business Profile & Logo */}
           <div className="glass-card p-6 space-y-4">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-              <Building className="w-5 h-5 text-blue-400" />
-              <h3 className="font-bold text-base text-white">Business Identification</h3>
+            <div className="flex items-center gap-3 border-b border-slate-200 dark:border-white/10 pb-4">
+              <Building className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Business Identification</h3>
             </div>
 
             <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
@@ -167,7 +167,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Business Name *
                 </label>
                 <input
@@ -179,7 +179,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Official Email *
                 </label>
                 <input
@@ -194,7 +194,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Phone / WhatsApp *
                 </label>
                 <input
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Website
                 </label>
                 <input
@@ -221,7 +221,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Address Line 1
                 </label>
                 <input
@@ -232,7 +232,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Address Line 2 (Road / Area)
                 </label>
                 <input
@@ -246,7 +246,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   City
                 </label>
                 <input
@@ -257,7 +257,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   State
                 </label>
                 <input
@@ -268,7 +268,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Pincode
                 </label>
                 <input
@@ -283,15 +283,15 @@ export default function SettingsPage() {
 
           {/* GST Configuration */}
           <div className="glass-card p-6 space-y-4">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-              <FileText className="w-5 h-5 text-blue-400" />
-              <h3 className="font-bold text-base text-white">GST Registration Status</h3>
+            <div className="flex items-center gap-3 border-b border-slate-200 dark:border-white/10 pb-4">
+              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">GST Registration Status</h3>
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
               <div>
-                <p className="font-semibold text-white">Is Royal Design Studio GST Registered?</p>
-                <p className="text-xs text-slate-400">
+                <p className="font-semibold text-slate-900 dark:text-white">Is Royal Design Studio GST Registered?</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   {form.isGstRegistered
                     ? "Invoices will calculate standard GST components"
                     : "Currently unregistered small business. Invoices state: GST Exempt under threshold."}
@@ -307,7 +307,7 @@ export default function SettingsPage() {
 
             {form.isGstRegistered && (
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Studio GSTIN
                 </label>
                 <input
@@ -323,14 +323,14 @@ export default function SettingsPage() {
 
           {/* Numbering Prefix Configuration */}
           <div className="glass-card p-6 space-y-4">
-            <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-              <CreditCard className="w-5 h-5 text-blue-400" />
-              <h3 className="font-bold text-base text-white">Document Numbering & Codes</h3>
+            <div className="flex items-center gap-3 border-b border-slate-200 dark:border-white/10 pb-4">
+              <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <h3 className="font-bold text-base text-slate-900 dark:text-white">Document Numbering & Codes</h3>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Prefix
                 </label>
                 <input
@@ -341,7 +341,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Invoice Code
                 </label>
                 <input
@@ -352,7 +352,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Quotation Code
                 </label>
                 <input
@@ -363,7 +363,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Proforma Code
                 </label>
                 <input
@@ -374,15 +374,15 @@ export default function SettingsPage() {
                 />
               </div>
             </div>
-            <p className="text-xs text-slate-400">
-              Sample document format: <span className="font-mono text-blue-400">{form.invoicePrefix}/{form.invoiceTypeCode}/2026-27/0001</span>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Sample document format: <span className="font-mono text-blue-600 dark:text-blue-400 font-bold">{form.invoicePrefix}/{form.invoiceTypeCode}/2026-27/0001</span>
             </p>
           </div>
 
           {/* Instructions and Terms */}
           <div className="glass-card p-6 space-y-4">
             <div>
-              <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+              <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Payment Instructions (Included on Invoices & PDFs)
               </label>
               <textarea
@@ -394,7 +394,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+              <label className="block text-xs font-bold mb-1 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                 Default Terms & Conditions
               </label>
               <textarea

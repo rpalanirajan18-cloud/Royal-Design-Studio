@@ -269,8 +269,8 @@ export default function OrdersPage() {
       {/* Header */}
       <div className="flex items-center justify-between animate-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold">Custom Orders</h1>
-          <p className="text-sm mt-0.5" style={{ color: "hsl(215 20% 55%)" }}>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Custom Orders</h1>
+          <p className="text-sm mt-0.5 text-slate-500 dark:text-slate-400">
             Production pipeline for customized gifting, physical printing, and flex orders
           </p>
         </div>
@@ -283,14 +283,13 @@ export default function OrdersPage() {
       {/* Pipeline tabs */}
       <div className="glass-card p-4 animate-fade-in-up space-y-3">
         <div className="relative max-w-md w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
           <input
             type="search"
             placeholder="Search order #, customer, specifications…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="form-input"
-            style={{ paddingLeft: "38px" }}
+            className="form-input !pl-9"
           />
         </div>
 
@@ -299,8 +298,8 @@ export default function OrdersPage() {
             onClick={() => setActiveStage("ALL")}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
               activeStage === "ALL"
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                ? "bg-[#27348B] text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
             }`}
           >
             All Stages
@@ -311,8 +310,8 @@ export default function OrdersPage() {
               onClick={() => setActiveStage(st.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 activeStage === st.id
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                  ? "bg-[#27348B] text-white shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
               }`}
             >
               {st.label}
@@ -325,14 +324,14 @@ export default function OrdersPage() {
       <div className="glass-card overflow-hidden animate-fade-in-up">
         {loading ? (
           <div className="flex items-center justify-center py-16 gap-3">
-            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-            <span className="text-slate-400">Loading orders pipeline…</span>
+            <Loader2 className="w-5 h-5 animate-spin text-blue-600 dark:text-cyan-400" />
+            <span className="text-slate-500 dark:text-slate-400 text-sm">Loading orders pipeline…</span>
           </div>
         ) : orders.length === 0 ? (
           <div className="text-center py-16">
-            <ShoppingBag className="w-12 h-12 mx-auto mb-3 opacity-20" />
-            <p className="font-medium mb-1">No orders in this stage</p>
-            <p className="text-sm mb-4 text-slate-400">
+            <ShoppingBag className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+            <p className="font-bold text-slate-900 dark:text-white mb-1">No orders in this stage</p>
+            <p className="text-sm mb-4 text-slate-500 dark:text-slate-400">
               Create an order to track customized production from artwork to delivery
             </p>
             <button onClick={openCreateModal} className="btn btn-primary btn-sm">
@@ -359,14 +358,14 @@ export default function OrdersPage() {
                   return (
                     <tr key={ord.id}>
                       <td>
-                        <span className="font-mono text-xs font-bold text-blue-400">{ord.number}</span>
+                        <span className="font-mono text-xs font-bold text-[#27348B] dark:text-cyan-400">{ord.number}</span>
                       </td>
                       <td>
-                        <p className="font-semibold text-white">{ord.customer.name}</p>
-                        <p className="text-xs text-slate-400">{ord.customer.phone}</p>
+                        <p className="font-bold text-slate-900 dark:text-white">{ord.customer.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{ord.customer.phone}</p>
                       </td>
                       <td>
-                        <span className="text-xs text-slate-300">
+                        <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
                           {new Date(ord.orderDate).toLocaleDateString("en-IN", {
                             day: "2-digit",
                             month: "short",
@@ -376,7 +375,7 @@ export default function OrdersPage() {
                       </td>
                       <td>
                         {ord.requiredByDate ? (
-                          <span className="text-xs font-medium text-amber-300">
+                          <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
                             {new Date(ord.requiredByDate).toLocaleDateString("en-IN", {
                               day: "2-digit",
                               month: "short",
@@ -384,14 +383,14 @@ export default function OrdersPage() {
                             })}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-500">—</span>
+                          <span className="text-xs text-slate-400">—</span>
                         )}
                       </td>
                       <td>
                         <span className={`badge ${conf.badge}`}>{conf.label}</span>
                       </td>
                       <td>
-                        <span className={`font-semibold text-sm ${Number(ord.balanceDue) > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+                        <span className={`font-semibold text-sm ${Number(ord.balanceDue) > 0 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                           ₹{Number(ord.balanceDue).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                         </span>
                       </td>
@@ -399,14 +398,14 @@ export default function OrdersPage() {
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setSelectedOrder(ord)}
-                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white"
+                            className="p-1.5 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
                             title="View Order"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => shareStatusWhatsApp(ord)}
-                            className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400"
+                            className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 transition-colors"
                             title="WhatsApp Client Update"
                           >
                             <Share2 className="w-4 h-4" />
@@ -424,19 +423,19 @@ export default function OrdersPage() {
 
       {/* Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-2xl overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] w-full max-w-2xl overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-3">
-                <ShoppingBag className="w-5 h-5 text-blue-400" />
+                <ShoppingBag className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
                 <div>
-                  <h3 className="text-lg font-bold font-mono">{selectedOrder.number}</h3>
-                  <p className="text-xs text-slate-400">{selectedOrder.customer.name}</p>
+                  <h3 className="text-lg font-bold font-mono text-slate-900 dark:text-white">{selectedOrder.number}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{selectedOrder.customer.name}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -445,7 +444,7 @@ export default function OrdersPage() {
             <div className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
               {/* Quick stage transition buttons */}
               <div>
-                <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">
+                <label className="block text-xs font-bold mb-2 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                   Update Production Stage
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -456,8 +455,8 @@ export default function OrdersPage() {
                       disabled={updatingStatus || selectedOrder.status === st.id}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                         selectedOrder.status === st.id
-                          ? "bg-blue-600 text-white ring-2 ring-blue-400"
-                          : "bg-white/5 hover:bg-white/10 text-slate-300"
+                          ? "bg-[#27348B] text-white ring-2 ring-[#3EC2ED]"
+                          : "bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {st.label}
@@ -468,11 +467,11 @@ export default function OrdersPage() {
 
               {/* Specs & Customization Notes */}
               {selectedOrder.customizationNotes && (
-                <div className="p-3.5 rounded-xl bg-white/5 border border-white/10">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                     Customization & Artwork Instructions
                   </p>
-                  <p className="text-sm text-slate-200 whitespace-pre-wrap">
+                  <p className="text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap">
                     {selectedOrder.customizationNotes}
                   </p>
                 </div>
@@ -480,24 +479,24 @@ export default function OrdersPage() {
 
               {/* Items */}
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                   Ordered Products & Specs
                 </h4>
                 <div className="space-y-2">
                   {selectedOrder.items?.map((it, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-lg bg-white/5 border border-white/5 flex justify-between items-center"
+                      className="p-3 rounded-lg bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 flex justify-between items-center"
                     >
                       <div>
-                        <p className="font-semibold text-sm text-white">{it.description}</p>
-                        <p className="text-xs text-slate-400">
+                        <p className="font-semibold text-sm text-slate-900 dark:text-white">{it.description}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           Qty: {it.quantity} {it.unit}
                           {it.size ? ` | Size: ${it.size}` : ""}
                           {it.material ? ` | Mat: ${it.material}` : ""}
                         </p>
                       </div>
-                      <p className="font-bold text-sm text-white">
+                      <p className="font-bold text-sm text-slate-900 dark:text-white">
                         ₹{Number(it.lineTotal).toLocaleString("en-IN")}
                       </p>
                     </div>
@@ -506,10 +505,10 @@ export default function OrdersPage() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-between pt-4 border-t border-white/10">
+              <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   onClick={() => shareStatusWhatsApp(selectedOrder)}
-                  className="btn btn-secondary btn-sm flex items-center gap-2 text-emerald-400"
+                  className="btn btn-secondary btn-sm flex items-center gap-2 text-emerald-600 dark:text-emerald-400"
                 >
                   <Share2 className="w-4 h-4" />
                   WhatsApp Client
@@ -528,16 +527,16 @@ export default function OrdersPage() {
 
       {/* Create Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="glass-card w-full max-w-4xl overflow-hidden border border-white/10 shadow-2xl animate-fade-in-up">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#0d1527] w-full max-w-4xl overflow-hidden border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl animate-fade-in-up">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/10">
               <div className="flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-blue-400" />
-                <h3 className="text-lg font-bold">New Custom Printing / Gifting Order</h3>
+                <ShoppingBag className="w-5 h-5 text-[#27348B] dark:text-blue-400" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">New Custom Printing / Gifting Order</h3>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -545,14 +544,14 @@ export default function OrdersPage() {
 
             <form onSubmit={handleCreateOrder} className="p-6 space-y-5 max-h-[85vh] overflow-y-auto">
               {formError && (
-                <div className="p-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-lg">
+                <div className="p-3 text-sm bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-400 rounded-lg">
                   {formError}
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Customer *
                   </label>
                   <select
@@ -570,7 +569,7 @@ export default function OrdersPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Order Date
                   </label>
                   <input
@@ -582,7 +581,7 @@ export default function OrdersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Target Completion Date
                   </label>
                   <input
@@ -598,13 +597,13 @@ export default function OrdersPage() {
               {/* Items & Custom Specifications */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Item Specifications
                   </label>
                   <button
                     type="button"
                     onClick={addEmptyItem}
-                    className="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1"
+                    className="text-xs text-[#27348B] dark:text-cyan-400 hover:underline font-semibold flex items-center gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Item
                   </button>
@@ -614,7 +613,7 @@ export default function OrdersPage() {
                   {items.map((item, index) => (
                     <div
                       key={index}
-                      className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-2"
+                      className="p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 space-y-2"
                     >
                       <div className="grid grid-cols-12 gap-2">
                         <div className="col-span-12 sm:col-span-6">
@@ -648,18 +647,18 @@ export default function OrdersPage() {
                             placeholder="Price (₹)"
                             value={item.unitPrice}
                             onChange={(e) => updateItem(index, "unitPrice", Number(e.target.value))}
-                            className="form-input"
+                            className="form-input font-semibold"
                           />
                         </div>
                         <div className="col-span-4 sm:col-span-2 flex items-center justify-between">
-                          <span className="font-bold text-white text-sm">
+                          <span className="font-bold text-slate-900 dark:text-white text-sm">
                             ₹{item.lineTotal.toLocaleString("en-IN")}
                           </span>
                           <button
                             type="button"
                             onClick={() => removeItem(index)}
                             disabled={items.length <= 1}
-                            className="p-1 text-slate-400 hover:text-rose-400"
+                            className="p-1 text-slate-400 hover:text-rose-600"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -697,7 +696,7 @@ export default function OrdersPage() {
               {/* Notes & Advance Received */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Artwork & Customization Notes
                   </label>
                   <textarea
@@ -709,7 +708,7 @@ export default function OrdersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Advance Received Amount (₹)
                   </label>
                   <input
@@ -718,10 +717,10 @@ export default function OrdersPage() {
                     placeholder="0.00"
                     value={advanceAmount}
                     onChange={(e) => setAdvanceAmount(Number(e.target.value))}
-                    className="form-input text-emerald-400 font-semibold mb-3"
+                    className="form-input text-emerald-600 dark:text-emerald-400 font-bold mb-3"
                   />
 
-                  <label className="block text-xs font-semibold mb-1 uppercase tracking-wider text-slate-300">
+                  <label className="block text-xs font-bold mb-1.5 uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Delivery Address (if shipping)
                   </label>
                   <input
@@ -734,7 +733,7 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-white/10">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}

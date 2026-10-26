@@ -1,0 +1,53 @@
+[
+  {
+    "name": "Government Hospital Ambasamuthram",
+    "contactPerson": "Dr. Rabin",
+    "phone": "+91 883 814 3762",
+    "whatsapp": "+91 883 814 3762",
+    "email": "",
+    "billingAddress": "Ambasamuthram",
+    "billingCity": "Ambai",
+    "billingState": "Tamil Nadu",
+    "billingPincode": "627401",
+    "gstin": "",
+    "isActive": true,
+    "balance": 0,
+    "createdAt": "2026-10-26T14:05:20.085Z",
+    "id": "loc_2efca7ef-98de-443a-aea3-9570220c1bfe",
+    "updatedAt": "2026-10-26T14:05:20.086Z"
+  },
+  {
+    "name": "Santhiya Constructions",
+    "contactPerson": "Sukumar",
+    "phone": "+91 97515 53500",
+    "whatsapp": "+91 97515 53500",
+    "email": "",
+    "billingAddress": "Arunapperi, Tenkasi  ",
+    "billingCity": "Tenkasi",
+    "billingState": "Tamil Nadu",
+    "billingPincode": "627808",
+    "gstin": "",
+    "isActive": true,
+    "balance": 0,
+    "createdAt": "2026-10-26T14:03:22.837Z",
+    "id": "loc_e8322525-f8e3-4c32-9ed5-380da77f7cb2",
+    "updatedAt": "2026-10-26T14:03:22.838Z"
+  },
+  {
+    "name": "Ponmalar",
+    "contactPerson": "Ponmalar",
+    "phone": "+918248149825",
+    "whatsapp": "",
+    "email": "r.palanirajan18@gmail.com",
+    "billingAddress": "2/21, Santhanakumarpatti, Avudayanoor, Tenkasi",
+    "billingCity": "Tenkasi",
+    "billingState": "Tamil Nadu",
+    "billingPincode": "627808",
+    "gstin": "",
+    "isActive": true,
+    "balance": 0,
+    "createdAt": "2026-10-26T13:49:23.130Z",
+    "id": "loc_4cf72b7a-c507-4318-9b21-193aadd40186",
+    "updatedAt": "2026-10-26T13:49:23.130Z"
+  }
+]
