@@ -79,6 +79,7 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+  const [sharingId, setSharingId] = useState<string | null>(null);
 
   // Create Modal
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -273,21 +274,68 @@ export default function InvoicesPage() {
     }
   };
 
-  const shareWhatsApp = (inv: Invoice) => {
-    const custName = inv.customer?.name ?? "Customer";
-    const custPhone = (inv.customer?.phone ?? "").replace(/[^0-9]/g, "");
-    const text = encodeURIComponent(
-      `Hello ${custName},\n\n` +
-      `Here is your invoice ${inv.number} from *Royal Design Studio*.\n` +
-      `Total: ₹${Number(inv.total).toLocaleString("en-IN")}\n` +
-      `Balance Due: ₹${Number(inv.balanceDue).toLocaleString("en-IN")}\n\n` +
-      `For payments, UPI ID: royaldesignstudioofficial@okaxis or Bank Transfer.\n` +
-      `Thank you for choosing Royal Design Studio!`
-    );
-    if (custPhone) {
-      window.open(`https://wa.me/${custPhone}?text=${text}`, "_blank");
-    } else {
-      window.open(`https://wa.me/?text=${text}`, "_blank");
+  const shareWhatsApp = async (inv: Invoice) => {
+    setSharingId(inv.id);
+    try {
+      const custName = inv.customer?.name ?? "Customer";
+      const custPhone = (inv.customer?.phone ?? "").replace(/[^0-9]/g, "");
+      const safeCust = custName.replace(/[/\\?%*:|"<>]/g, "-").replace(/\s+/g, " ").trim();
+      const safeNum = inv.number.replace(/[/\\?%*:|"<>]/g, "-").trim();
+      const fileName = `${safeCust} - ${safeNum}.pdf`;
+
+      const downloadUrl = `${window.location.origin}/api/invoices/${inv.id}/pdf`;
+      const messageText =
+        `Hello ${custName},\n\n` +
+        `Here is your invoice *${inv.number}* from *Royal Design Studio*.\n` +
+        `💰 *Total Amount:* ₹${Number(inv.total).toLocaleString("en-IN", { minimumFractionDigits: 2 })}\n` +
+        `💳 *Balance Due:* ₹${Number(inv.balanceDue).toLocaleString("en-IN", { minimumFractionDigits: 2 })}\n\n` +
+        `📄 *View / Download Invoice PDF:*\n${downloadUrl}\n\n` +
+        `🏦 *For Payments:*\nUPI ID: royaldesignstudioofficial@okaxis or Bank Transfer.\n\n` +
+        `Thank you for choosing Royal Design Studio!`;
+
+      // 1. Fetch PDF blob
+      const res = await fetch(`/api/invoices/${inv.id}/pdf`);
+      if (!res.ok) throw new Error("Could not fetch PDF");
+      const blob = await res.blob();
+      const pdfFile = new File([blob], fileName, { type: "application/pdf" });
+
+      // 2. Check if native Web Share with file attachment is supported (Mobile & modern Desktop)
+      if (typeof navigator !== "undefined" && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({
+            title: `Invoice ${inv.number}`,
+            text: messageText,
+            files: [pdfFile],
+          });
+          setSharingId(null);
+          return;
+        } catch (shareErr: any) {
+          if (shareErr?.name === "AbortError") {
+            setSharingId(null);
+            return;
+          }
+        }
+      }
+
+      // 3. Fallback: Automatically trigger PDF download so the user has the file immediately to attach, and open WhatsApp
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      const encoded = encodeURIComponent(messageText);
+      const waUrl = custPhone
+        ? `https://wa.me/${custPhone}?text=${encoded}`
+        : `https://wa.me/?text=${encoded}`;
+      window.open(waUrl, "_blank");
+    } catch (err) {
+      console.error("WhatsApp share failed:", err);
+    } finally {
+      setSharingId(null);
     }
   };
 
@@ -428,7 +476,7 @@ export default function InvoicesPage() {
                           </button>
                           <a
                             href={`/api/invoices/${inv.id}/pdf`}
-                            download
+                            download={`${(inv.customer?.name || "Client").replace(/[/\\?%*:|"<>]/g, "-").replace(/\s+/g, " ").trim()} - ${inv.number.replace(/[/\\?%*:|"<>]/g, "-").trim()}.pdf`}
                             className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 text-[#27348B] dark:text-blue-400 transition-colors"
                             title="Download PDF"
                           >
@@ -436,10 +484,15 @@ export default function InvoicesPage() {
                           </a>
                           <button
                             onClick={() => shareWhatsApp(inv)}
-                            className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 transition-colors"
-                            title="Share on WhatsApp"
+                            disabled={sharingId === inv.id}
+                            className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 transition-colors disabled:opacity-50"
+                            title="Share on WhatsApp (with PDF)"
                           >
-                            <Share2 className="w-4 h-4" />
+                            {sharingId === inv.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                            ) : (
+                              <Share2 className="w-4 h-4" />
+                            )}
                           </button>
                           {inv.status === InvoiceStatus.DRAFT && (
                             <button
@@ -539,7 +592,7 @@ export default function InvoicesPage() {
                 <div className="flex items-center gap-2">
                   <a
                     href={`/api/invoices/${selectedInvoice.id}/pdf`}
-                    download
+                    download={`${(selectedInvoice.customer?.name || "Client").replace(/[/\\?%*:|"<>]/g, "-").replace(/\s+/g, " ").trim()} - ${selectedInvoice.number.replace(/[/\\?%*:|"<>]/g, "-").trim()}.pdf`}
                     className="btn btn-primary btn-sm flex items-center gap-2"
                   >
                     <FileDown className="w-4 h-4" />
@@ -547,10 +600,15 @@ export default function InvoicesPage() {
                   </a>
                   <button
                     onClick={() => shareWhatsApp(selectedInvoice)}
-                    className="btn btn-secondary btn-sm flex items-center gap-2 text-emerald-600 dark:text-emerald-400"
+                    disabled={sharingId === selectedInvoice.id}
+                    className="btn btn-secondary btn-sm flex items-center gap-2 text-emerald-600 dark:text-emerald-400 disabled:opacity-50"
                   >
-                    <Share2 className="w-4 h-4" />
-                    WhatsApp
+                    {sharingId === selectedInvoice.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                    ) : (
+                      <Share2 className="w-4 h-4" />
+                    )}
+                    {sharingId === selectedInvoice.id ? "Preparing PDF…" : "Share on WhatsApp"}
                   </button>
                 </div>
 
