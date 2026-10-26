@@ -580,7 +580,7 @@ export default function InvoicesPage() {
                         </p>
                       </div>
                       <p className="font-bold text-sm text-slate-900 dark:text-white">
-                        ₹{Number(item.lineTotal).toLocaleString("en-IN")}
+                        ₹{Number(item.lineTotal || (Number(item.quantity || 1) * Number(item.unitPrice || 0) - Number(item.discount || 0))).toLocaleString("en-IN")}
                       </p>
                     </div>
                   ))}

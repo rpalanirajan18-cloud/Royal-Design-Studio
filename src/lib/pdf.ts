@@ -5,6 +5,8 @@
  * All templates are server-rendered, not accessible from the browser.
  */
 
+import fs from "fs";
+import path from "path";
 import puppeteer from "puppeteer";
 import { prisma } from "@/lib/prisma";
 import { readStore } from "@/lib/store";
@@ -23,7 +25,36 @@ type CompanySettings = {
   defaultInvoiceTerms?: string | null;
   isGstRegistered: boolean;
   gstin?: string | null;
+  logoPath?: string | null;
 };
+
+function getLogoBase64(customPath?: string | null): string {
+  try {
+    if (customPath) {
+      const fullCustom = path.isAbsolute(customPath)
+        ? customPath
+        : path.join(process.cwd(), "public", customPath.replace(/^\//, ""));
+      if (fs.existsSync(fullCustom)) {
+        const data = fs.readFileSync(fullCustom);
+        const ext = path.extname(fullCustom).toLowerCase().replace(".", "") || "png";
+        return `data:image/${ext === "svg" ? "svg+xml" : ext};base64,${data.toString("base64")}`;
+      }
+    }
+  } catch (e) {
+    console.warn("Could not load custom logo:", e);
+  }
+
+  try {
+    const defaultLogoPath = path.join(process.cwd(), "public", "logo.png");
+    if (fs.existsSync(defaultLogoPath)) {
+      const data = fs.readFileSync(defaultLogoPath);
+      return `data:image/png;base64,${data.toString("base64")}`;
+    }
+  } catch (e) {
+    console.warn("Could not load default logo:", e);
+  }
+  return "";
+}
 
 function formatCurrency(amount: number, symbol = "₹"): string {
   return `${symbol}${new Intl.NumberFormat("en-IN", {
@@ -55,9 +86,15 @@ function invoiceStatusColor(status: string): string {
 }
 
 function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings): string {
+  const logoBase64 = getLogoBase64(company.logoPath);
   const itemRows = invoice.items
-    .map(
-      (item, i) => `
+    .map((item, i) => {
+      const lineTotal =
+        Number(item.lineTotal || 0) ||
+        Number(item.quantity || 1) * Number(item.unitPrice || 0) -
+          Number(item.discount || 0);
+
+      return `
       <tr class="${i % 2 === 0 ? "even" : "odd"}">
         <td class="desc">
           <strong>${item.description}</strong>
@@ -66,10 +103,10 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
         <td class="right">${item.quantity}</td>
         <td class="right">${formatCurrency(item.unitPrice, company.currencySymbol)}</td>
         ${item.discount > 0 ? `<td class="right">${formatCurrency(item.discount, company.currencySymbol)}</td>` : `<td class="right">—</td>`}
-        <td class="right bold">${formatCurrency(item.lineTotal, company.currencySymbol)}</td>
+        <td class="right bold">${formatCurrency(lineTotal, company.currencySymbol)}</td>
       </tr>
-    `
-    )
+    `;
+    })
     .join("");
 
   return `<!DOCTYPE html>
@@ -88,21 +125,15 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
     .page { padding: 40px 48px; max-width: 794px; margin: 0 auto; }
 
     /* Header */
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; }
-    .brand-block { display: flex; align-items: center; gap: 12px; }
-    .brand-logo {
-      width: 52px; height: 52px; border-radius: 12px;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 22px; font-weight: 900;
-    }
-    .brand-name { font-size: 20px; font-weight: 800; color: #1e293b; }
-    .brand-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .brand-block { display: flex; flex-direction: column; align-items: flex-start; }
+    .brand-logo-img { height: 54px; width: auto; max-width: 220px; object-fit: contain; margin-bottom: 8px; }
+    .brand-name { font-size: 20px; font-weight: 800; color: #1e293b; margin-bottom: 2px; }
+    .brand-sub { font-size: 11px; color: #64748b; line-height: 1.5; }
     .doc-info { text-align: right; }
     .doc-type {
-      font-size: 26px; font-weight: 900;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      font-size: 28px; font-weight: 900;
+      color: #27348b;
       letter-spacing: -0.5px;
     }
     .doc-number { font-size: 14px; font-weight: 700; color: #334155; margin-top: 4px; }
@@ -115,7 +146,7 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
     }
 
     /* Divider */
-    .divider { height: 2px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 1px; margin: 20px 0; }
+    .divider { height: 2px; background: linear-gradient(135deg, #27348b, #00aeef); border-radius: 1px; margin: 20px 0; }
 
     /* Parties */
     .parties { display: flex; gap: 40px; margin-bottom: 28px; }
@@ -133,7 +164,7 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
 
     /* Items table */
     table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-    thead tr { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+    thead tr { background: #27348b; }
     thead th {
       padding: 10px 12px; text-align: right;
       font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -154,7 +185,7 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
     .totals-table { min-width: 280px; }
     .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
     .totals-row.divider-row { border-top: 1px solid #e2e8f0; margin-top: 4px; padding-top: 8px; }
-    .totals-row.total { font-size: 16px; font-weight: 800; color: #1e293b; border-top: 2px solid #3b82f6; padding-top: 10px; margin-top: 4px; }
+    .totals-row.total { font-size: 16px; font-weight: 800; color: #1e293b; border-top: 2px solid #27348b; padding-top: 10px; margin-top: 4px; }
     .totals-row.balance { color: #ef4444; font-size: 15px; font-weight: 700; }
     .totals-row.paid { color: #22c55e; }
     .totals-label { color: #64748b; }
@@ -163,7 +194,7 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
     /* Notes */
     .notes-section { margin-bottom: 20px; }
     .notes-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 6px; }
-    .notes-content { font-size: 12px; color: #475569; line-height: 1.6; padding: 12px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #3b82f6; }
+    .notes-content { font-size: 12px; color: #475569; line-height: 1.6; padding: 12px; background: #f8fafc; border-radius: 6px; border-left: 3px solid #27348b; }
 
     /* Footer */
     .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
@@ -180,12 +211,13 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
   <!-- Header -->
   <div class="header">
     <div class="brand-block">
-      <div class="brand-logo">R</div>
-      <div>
+      ${logoBase64 ? `
+        <img src="${logoBase64}" class="brand-logo-img" alt="${company.name}" />
+      ` : `
         <div class="brand-name">${company.name}</div>
-        <div class="brand-sub">${company.addressLine1}, ${company.city} — ${company.pincode}</div>
-        <div class="brand-sub">${company.phone} | ${company.email}</div>
-      </div>
+      `}
+      <div class="brand-sub">${company.addressLine1}${company.addressLine2 ? `, ${company.addressLine2}` : ""}, ${company.city} — ${company.pincode}</div>
+      <div class="brand-sub">${company.phone} | ${company.email}</div>
     </div>
     <div class="doc-info">
       <div class="doc-type">INVOICE</div>
@@ -412,7 +444,10 @@ export async function generateInvoicePDF(invoiceId: string): Promise<Buffer> {
       quantity: Number(item.quantity || 1),
       unitPrice: Number(item.unitPrice || 0),
       discount: Number(item.discount || 0),
-      lineTotal: Number(item.lineTotal || 0),
+      lineTotal:
+        Number(item.lineTotal || 0) ||
+        Number(item.quantity || 1) * Number(item.unitPrice || 0) -
+          Number(item.discount || 0),
     })),
   };
 

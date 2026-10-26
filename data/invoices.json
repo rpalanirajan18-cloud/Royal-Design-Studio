@@ -24,6 +24,7 @@
         "unitPrice": 40,
         "discount": 0,
         "taxRate": 0,
+        "lineTotal": 1200,
         "sortOrder": 0
       }
     ],
