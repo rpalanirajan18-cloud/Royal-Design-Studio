@@ -1,0 +1,51 @@
+[
+  {
+    "id": "TSHIRT",
+    "name": "T-Shirts & Apparel",
+    "icon": "Shirt",
+    "description": "Custom printed t-shirts, polo, hoodies and sports jerseys",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  },
+  {
+    "id": "FLEX",
+    "name": "Flex & Banners",
+    "icon": "ImageIcon",
+    "description": "Outdoor normal flex, star backlit flex, blackout and vinyl prints",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  },
+  {
+    "id": "VISITING_CARD",
+    "name": "Visiting Cards",
+    "icon": "CreditCard",
+    "description": "Standard matte, velvet touch, spot UV and waterproof PVC cards",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  },
+  {
+    "id": "MUG_GIFT",
+    "name": "Mugs & Drinkware",
+    "icon": "Coffee",
+    "description": "Sublimation white ceramic mugs, magic mugs, bottles and gifts",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  },
+  {
+    "id": "SIGNAGE",
+    "name": "Signage & Boards",
+    "icon": "Building",
+    "description": "Sunboard mounting, 3D acrylic raised letters and LED glow signs",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  },
+  {
+    "id": "PAPER_PRINT",
+    "name": "Xerox & Print",
+    "icon": "Printer",
+    "description": "Photocopy, color document prints, photo prints and lamination",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  },
+  {
+    "id": "DESIGN",
+    "name": "Graphic Design",
+    "icon": "Sparkles",
+    "description": "Logo packages, branding assets and urgent graphic editing",
+    "createdAt": "2026-10-29T00:00:00.000Z"
+  }
+]

@@ -104,6 +104,7 @@ async function main() {
       description: "Monthly social media management across 2 platforms (Facebook, Instagram)",
       unit: "month",
       sellingPrice: 5000,
+      wholesalePrice: 4000,
     },
     {
       sku: "DM-SEO-001",
@@ -112,6 +113,7 @@ async function main() {
       description: "On-page and off-page SEO, monthly reporting",
       unit: "month",
       sellingPrice: 8000,
+      wholesalePrice: 6500,
     },
     {
       sku: "GD-LOGO-001",
@@ -120,6 +122,7 @@ async function main() {
       description: "Custom logo design with 3 concepts, 3 revisions, source files included",
       unit: "job",
       sellingPrice: 3500,
+      wholesalePrice: 2500,
     },
     {
       sku: "GD-BC-001",
@@ -128,6 +131,52 @@ async function main() {
       description: "Double-sided business card design, ready-to-print files",
       unit: "job",
       sellingPrice: 800,
+      wholesalePrice: 500,
+    },
+    {
+      sku: "GD-QUICK-001",
+      name: "Quick Design / Editing Work",
+      category: "GRAPHIC_DESIGN_BRANDING" as const,
+      description: "Quick document editing, banner resizing, or urgent layout design",
+      unit: "job",
+      sellingPrice: 150,
+      wholesalePrice: 100,
+    },
+    {
+      sku: "PR-XRX-001",
+      name: "B&W Xerox / Photocopy",
+      category: "PRINTING" as const,
+      description: "Standard A4 single/double-sided black and white photocopy",
+      unit: "page",
+      sellingPrice: 2,
+      wholesalePrice: 1.5,
+    },
+    {
+      sku: "PR-CLR-001",
+      name: "Color Printout (A4)",
+      category: "PRINTING" as const,
+      description: "High quality color print on 75 GSM paper",
+      unit: "page",
+      sellingPrice: 10,
+      wholesalePrice: 7,
+    },
+    {
+      sku: "PR-PHOTO-001",
+      name: "Glossy Photo Printout",
+      category: "PRINTING" as const,
+      description: "High resolution glossy photo paper print",
+      unit: "page",
+      sellingPrice: 30,
+      wholesalePrice: 20,
+    },
+    {
+      sku: "PR-LAM-001",
+      name: "Document Lamination (A4)",
+      category: "PRINTING" as const,
+      description: "Pouch lamination for certificates and ID cards",
+      unit: "pcs",
+      sellingPrice: 20,
+      wholesalePrice: 15,
     },
     {
       sku: "PR-FLEX-001",
@@ -136,6 +185,7 @@ async function main() {
       description: "Outdoor flex banner printing per square foot",
       unit: "sqft",
       sellingPrice: 25,
+      wholesalePrice: 18,
     },
     {
       sku: "PR-VC-001",
@@ -144,6 +194,7 @@ async function main() {
       description: "250 GSM matt lamination visiting cards (100 pcs)",
       unit: "100 pcs",
       sellingPrice: 350,
+      wholesalePrice: 250,
     },
     {
       sku: "GF-MUG-001",
@@ -152,6 +203,7 @@ async function main() {
       description: "11oz white ceramic mug with custom full-color print",
       unit: "pcs",
       sellingPrice: 299,
+      wholesalePrice: 220,
     },
     {
       sku: "GF-TSHIRT-001",
@@ -160,6 +212,7 @@ async function main() {
       description: "Customized round-neck T-shirt with DTF print, all sizes",
       unit: "pcs",
       sellingPrice: 499,
+      wholesalePrice: 350,
     },
     {
       sku: "WEB-BASIC-001",
@@ -168,6 +221,7 @@ async function main() {
       description: "5-page responsive business website with CMS, mobile optimized",
       unit: "project",
       sellingPrice: 15000,
+      wholesalePrice: 12000,
     },
     {
       sku: "WEB-ECOM-001",
@@ -176,6 +230,7 @@ async function main() {
       description: "Full e-commerce website with product catalog, cart, and payment gateway",
       unit: "project",
       sellingPrice: 45000,
+      wholesalePrice: 38000,
     },
   ];
 

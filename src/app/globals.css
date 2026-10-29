@@ -515,4 +515,41 @@ html:not(.dark) main {
   background-color: #f8fafc !important;
 }
 
+/* ─── Quick Bill Motion Button Animations ─────────────────── */
+@keyframes quickPulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 16px -2px rgba(245, 158, 11, 0.45), 0 0 6px -1px rgba(249, 115, 22, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 28px 4px rgba(245, 158, 11, 0.75), 0 0 14px 2px rgba(249, 115, 22, 0.55);
+  }
+}
+
+@keyframes quickShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.quick-motion-btn {
+  background: linear-gradient(135deg, #f59e0b, #ea580c, #f97316, #d97706);
+  background-size: 250% 250%;
+  animation: quickShimmer 5s ease infinite, quickPulseGlow 2.5s ease-in-out infinite;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quick-motion-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.quick-motion-btn:active {
+  transform: translateY(0px) scale(0.97);
+}
+
 

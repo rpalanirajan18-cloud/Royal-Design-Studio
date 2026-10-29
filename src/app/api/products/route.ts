@@ -17,8 +17,13 @@ const createProductSchema = z.object({
   sku: z.string().optional(),
   description: z.string().optional(),
   category: z.nativeEnum(ProductCategory).default(ProductCategory.GRAPHIC_DESIGN_BRANDING),
+  customCategory: z.string().optional(),
+  subCategory: z.string().optional(),
+  imageUrl: z.string().optional(),
+  pdfUrl: z.string().optional(),
   unit: z.string().default("pcs"),
   sellingPrice: z.number().min(0, "Price must be positive"),
+  wholesalePrice: z.number().min(0).optional(),
   costPrice: z.number().min(0).optional(),
   taxRate: z.number().min(0).default(0),
 });
@@ -115,10 +120,11 @@ export async function POST(request: NextRequest) {
         category: data.category,
         unit: data.unit.trim() || "pcs",
         sellingPrice: data.sellingPrice,
+        wholesalePrice: data.wholesalePrice,
         costPrice: data.costPrice,
         taxRate: data.taxRate,
         isActive: true,
-      },
+      } as any,
     });
 
     await createAuditLog({
@@ -139,6 +145,7 @@ export async function POST(request: NextRequest) {
       category: data.category,
       unit: data.unit.trim() || "pcs",
       sellingPrice: data.sellingPrice,
+      wholesalePrice: data.wholesalePrice,
       costPrice: data.costPrice,
       taxRate: data.taxRate,
       isActive: true,

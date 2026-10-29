@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="teeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="16" fill="#0f172a"/>
+  <!-- T-Shirt Body -->
+  <path d="M 32 20 L 42 26 C 45 28 55 28 58 26 L 68 20 L 86 32 L 74 46 L 67 40 L 67 80 L 33 80 L 33 40 L 26 46 L 14 32 Z" fill="url(#teeGrad)"/>
+  <!-- Collar -->
+  <path d="M 42 26 C 47 31 53 31 58 26" fill="none" stroke="#e0f2fe" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Fold / Shadow details -->
+  <path d="M 33 40 L 36 78" stroke="#0369a1" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <path d="M 67 40 L 64 78" stroke="#0369a1" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <!-- Cotton Tag -->
+  <rect x="42" y="44" width="16" height="12" rx="2" fill="#ffffff" opacity="0.9"/>
+  <text x="50" y="52" font-size="6" font-family="Arial, sans-serif" font-weight="bold" fill="#0369a1" text-anchor="middle">180 GSM</text>
+</svg>

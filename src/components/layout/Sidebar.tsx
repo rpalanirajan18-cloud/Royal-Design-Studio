@@ -19,6 +19,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  SlidersHorizontal,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { UserRole } from "@prisma/client";
@@ -32,7 +33,8 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard",            href: "/dashboard",           icon: LayoutDashboard },
   { label: "Customers",            href: "/customers",           icon: Users },
-  { label: "Catalog & Pricing",    href: "/products",            icon: Package },
+  { label: "Catalog Items",        href: "/products",            icon: Package },
+  { label: "Pricing Rate Tiers",   href: "/pricing-tiers",       icon: SlidersHorizontal },
   { label: "Quotations",           href: "/quotations",          icon: FileText },
   { label: "Proforma Invoices",    href: "/proforma",            icon: Receipt },
   { label: "Sales Invoices",       href: "/invoices",            icon: Receipt },

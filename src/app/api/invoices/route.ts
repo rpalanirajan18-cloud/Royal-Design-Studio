@@ -24,7 +24,11 @@ const lineItemSchema = z.object({
 });
 
 const createInvoiceSchema = z.object({
-  customerId: z.string().min(1),
+  customerId: z.string().optional(),
+  isWalkIn: z.boolean().default(false),
+  walkInName: z.string().optional(),
+  paymentMethod: z.string().optional(),
+  status: z.enum(["DRAFT", "ISSUED", "PAID"]).optional(),
   quotationId: z.string().optional(),
   proformaId: z.string().optional(),
   orderId: z.string().optional(),
@@ -139,35 +143,59 @@ export async function POST(request: NextRequest) {
     return sum + (lineBase * item.taxRate) / 100;
   }, 0);
 
-  const total =
-    subtotal + taxAmount + data.deliveryCharge - data.discountAmount;
-  const balanceDue = total - data.advancePaid;
+  const total = subtotal + taxAmount + data.deliveryCharge - data.discountAmount;
 
-  // Allocate invoice number (draft — no number yet until issued)
+  const isWalkIn = Boolean(data.isWalkIn || !data.customerId || data.customerId === "walk-in");
+  const WALK_IN_ID = "walk-in-customer";
+  const customerId = isWalkIn ? WALK_IN_ID : (data.customerId || WALK_IN_ID);
+
+  const isPaidOnCreation = data.status === "PAID" || (isWalkIn && data.advancePaid >= total) || (isWalkIn && !data.dueDate);
+  const status = data.status || (isPaidOnCreation ? "PAID" : "DRAFT");
+  const advancePaid = isPaidOnCreation ? total : data.advancePaid;
+  const amountPaid = isPaidOnCreation ? total : data.advancePaid;
+  const balanceDue = Math.max(0, total - amountPaid);
+
+  // Allocate invoice number
   const number = await allocateDocumentNumber("INVOICE");
 
   try {
+    if (isWalkIn) {
+      await prisma.customer.upsert({
+        where: { id: WALK_IN_ID },
+        update: {},
+        create: {
+          id: WALK_IN_ID,
+          name: "Walk-in Customer",
+          phone: "—",
+          isActive: true,
+        },
+      }).catch(() => {});
+    }
+
     const invoice = await prisma.salesInvoice.create({
       data: {
         number,
-        customerId: data.customerId,
+        customerId,
         createdById: session.user.id,
         quotationId: data.quotationId,
         proformaId: data.proformaId,
         orderId: data.orderId,
         issueDate: new Date(data.issueDate),
         dueDate: new Date(data.dueDate),
-        status: "DRAFT",
+        status: status as any,
         subtotal,
         discountAmount: data.discountAmount,
         deliveryCharge: data.deliveryCharge,
         taxAmount,
         total,
-        advancePaid: data.advancePaid,
-        amountPaid: data.advancePaid,
+        advancePaid,
+        amountPaid,
         balanceDue,
         notes: data.notes,
         terms: data.terms,
+        isWalkIn,
+        walkInName: data.walkInName || (isWalkIn ? "Walk-in Customer" : undefined),
+        issuedAt: status === "PAID" ? new Date() : undefined,
         items: {
           create: data.items.map((item) => ({
             productId: item.productId,
@@ -185,7 +213,7 @@ export async function POST(request: NextRequest) {
             sortOrder: item.sortOrder,
           })),
         },
-      },
+      } as any,
       include: { customer: true, items: true },
     });
 
@@ -194,15 +222,24 @@ export async function POST(request: NextRequest) {
       action: "CREATE",
       entityType: "Invoice",
       entityId: invoice.id,
-      description: `Created draft invoice ${invoice.number} for ${invoice.customer?.name ?? "Customer"}`,
+      description: `Created ${status === "PAID" ? "counter bill" : "draft invoice"} ${invoice.number} for ${isWalkIn ? (data.walkInName || "Walk-in Customer") : ((invoice as any).customer?.name ?? "Customer")}`,
       ipAddress: request.headers.get("x-forwarded-for") ?? undefined,
     }).catch(() => {});
 
     return NextResponse.json({ invoice }, { status: 201 });
   } catch (err) {
     console.warn("Prisma invoice creation failed, using local store:", err);
-    const allCustomers = readStore<any>("customers");
-    const cust = allCustomers.find((c: any) => c.id === data.customerId);
+    let allCustomers = readStore<any>("customers");
+    let cust = allCustomers.find((c: any) => c.id === customerId);
+    if (isWalkIn && !cust) {
+      cust = addItemToStore("customers", {
+        id: WALK_IN_ID,
+        name: "Walk-in Customer",
+        phone: "—",
+        isActive: true,
+      });
+    }
+
     const storedItems = data.items.map((item, idx) => ({
       ...item,
       lineTotal:
@@ -211,27 +248,38 @@ export async function POST(request: NextRequest) {
         ((item.quantity * item.unitPrice - item.discount) * item.taxRate) / 100,
       sortOrder: idx,
     }));
+
     const invoice = addItemToStore("invoices", {
       number,
-      customerId: data.customerId,
+      customerId,
       createdById: session.user.id,
       issueDate: new Date(data.issueDate),
       dueDate: new Date(data.dueDate),
-      status: "DRAFT",
+      status,
       subtotal,
       discountAmount: data.discountAmount,
       deliveryCharge: data.deliveryCharge,
       taxAmount,
       total,
-      advancePaid: data.advancePaid,
-      amountPaid: data.advancePaid,
+      advancePaid,
+      amountPaid,
       balanceDue,
       notes: data.notes,
       terms: data.terms,
+      isWalkIn,
+      walkInName: data.walkInName || (isWalkIn ? "Walk-in Customer" : undefined),
+      issuedAt: status === "PAID" ? new Date().toISOString() : undefined,
       items: storedItems,
-      customer: cust
-        ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
-        : { name: "Valued Customer", phone: "" },
+      customer: isWalkIn
+        ? {
+            id: WALK_IN_ID,
+            name: data.walkInName || "Walk-in Customer",
+            phone: "—",
+            email: "",
+          }
+        : (cust
+            ? { id: cust.id, name: cust.name, phone: cust.phone, email: cust.email }
+            : { name: "Valued Customer", phone: "" }),
     });
     return NextResponse.json({ invoice }, { status: 201 });
   }

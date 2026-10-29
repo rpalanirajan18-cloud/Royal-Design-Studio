@@ -233,14 +233,18 @@ function generateInvoiceHTML(invoice: InvoicePDFData, company: CompanySettings):
   <div class="parties">
     <div class="party">
       <div class="party-label">Bill To</div>
-      <div class="party-name">${invoice.customer.name}</div>
+      <div class="party-name">${invoice.walkInName || invoice.customer?.name || "Walk-in Customer"}</div>
       <div class="party-detail">
-        ${invoice.customer.contactPerson ? `${invoice.customer.contactPerson}<br/>` : ""}
-        ${invoice.customer.phone}<br/>
-        ${invoice.customer.email ? `${invoice.customer.email}<br/>` : ""}
-        ${invoice.customer.billingAddress ?? ""}
-        ${invoice.customer.billingCity ? `, ${invoice.customer.billingCity}` : ""}
-        ${invoice.customer.billingPincode ? ` - ${invoice.customer.billingPincode}` : ""}
+        ${(invoice.isWalkIn || invoice.customer?.name === "Walk-in Customer") && (!invoice.customer?.phone || invoice.customer?.phone === "—") ? `
+          <span style="display:inline-block;padding:3px 8px;border-radius:4px;background:#f1f5f9;color:#475569;font-size:11px;font-weight:600">Quick Counter Sale (Walk-in)</span>
+        ` : `
+          ${invoice.customer?.contactPerson ? `${invoice.customer.contactPerson}<br/>` : ""}
+          ${invoice.customer?.phone && invoice.customer.phone !== "—" ? `${invoice.customer.phone}<br/>` : ""}
+          ${invoice.customer?.email ? `${invoice.customer.email}<br/>` : ""}
+          ${invoice.customer?.billingAddress ?? ""}
+          ${invoice.customer?.billingCity ? `, ${invoice.customer.billingCity}` : ""}
+          ${invoice.customer?.billingPincode ? ` - ${invoice.customer.billingPincode}` : ""}
+        `}
       </div>
     </div>
     <div class="party">
@@ -339,6 +343,8 @@ interface InvoicePDFData {
   notes?: string | null;
   terms?: string | null;
   quotationNumber?: string | null;
+  isWalkIn?: boolean;
+  walkInName?: string | null;
   customer: {
     name: string;
     contactPerson?: string | null;

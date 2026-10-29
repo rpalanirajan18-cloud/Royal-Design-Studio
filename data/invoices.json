@@ -1,5 +1,47 @@
 [
   {
+    "number": "RDS/INV/2026-27/0003",
+    "customerId": "walk-in-customer",
+    "createdById": "admin-ramya",
+    "issueDate": "2026-10-29T07:23:11.592Z",
+    "dueDate": "2026-10-29T07:23:11.592Z",
+    "status": "PAID",
+    "subtotal": 4,
+    "discountAmount": 0,
+    "deliveryCharge": 0,
+    "taxAmount": 0,
+    "total": 4,
+    "advancePaid": 4,
+    "amountPaid": 4,
+    "balanceDue": 0,
+    "notes": "Paid via CASH (RETAIL RATE)",
+    "terms": "Counter walk-in bill. Payment received in full.",
+    "isWalkIn": true,
+    "walkInName": "Walk-in Customer",
+    "issuedAt": "2026-10-29T07:23:17.874Z",
+    "items": [
+      {
+        "description": "B&W Xerox / Copy",
+        "unit": "page",
+        "quantity": 2,
+        "unitPrice": 2,
+        "discount": 0,
+        "taxRate": 0,
+        "sortOrder": 0,
+        "lineTotal": 4
+      }
+    ],
+    "customer": {
+      "id": "walk-in-customer",
+      "name": "Walk-in Customer",
+      "phone": "—",
+      "email": ""
+    },
+    "id": "loc_aa175322-038a-43e3-a94a-e45805ac65da",
+    "createdAt": "2026-10-29T07:23:17.874Z",
+    "updatedAt": "2026-10-29T07:23:17.874Z"
+  },
+  {
     "number": "RDS/INV/2026-27/0002",
     "customerId": "loc_4cf72b7a-c507-4318-9b21-193aadd40186",
     "createdById": "admin-master-rds",

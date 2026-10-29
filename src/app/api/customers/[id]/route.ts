@@ -26,6 +26,7 @@ const updateCustomerSchema = z.object({
   billingPincode: z.string().optional(),
   gstin: z.string().optional(),
   isActive: z.boolean().optional(),
+  pricingTier: z.enum(["RETAIL", "WHOLESALE"]).optional(),
   notes: z.string().optional(),
 });
 

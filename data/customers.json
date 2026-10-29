@@ -1,5 +1,22 @@
 [
   {
+    "id": "walk-in-customer",
+    "name": "Walk-in Customer",
+    "contactPerson": "Counter / Walk-in",
+    "phone": "—",
+    "whatsapp": "",
+    "email": "",
+    "billingAddress": "Counter Sale",
+    "billingCity": "",
+    "billingState": "",
+    "billingPincode": "",
+    "gstin": "",
+    "isActive": true,
+    "balance": 0,
+    "createdAt": "2026-10-26T00:00:00.000Z",
+    "updatedAt": "2026-10-26T00:00:00.000Z"
+  },
+  {
     "name": "Government Hospital Ambasamuthram",
     "contactPerson": "Dr. Rabin",
     "phone": "+91 883 814 3762",
